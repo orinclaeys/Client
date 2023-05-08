@@ -34,13 +34,13 @@ public class RESTControllerClient {
 */
 
     @PutMapping("Update/PreviousNode/{NextId}")
-    public void shutdownPreviousNode(@PathVariable("NextId") int NextId) {
+    public void updatePreviousNode(@PathVariable("NextId") int NextId) {
         ClientService clientService = new ClientService(ClientApplication.client);
         ClientApplication.client.setNextId(NextId);
     }
 
     @PutMapping("Update/NextNode/{PreviousId}")
-    public void shutdownNextNode(@PathVariable("Previous") int PreviousId) {
+    public void updateNextNode(@PathVariable("Previous") int PreviousId) {
         ClientService clientService = new ClientService(ClientApplication.client);
         ClientApplication.client.setPreviousId(PreviousId);
     }
