@@ -27,9 +27,9 @@ public class Client {
         this.previousID = this.currentID;
         this.nextID = this.currentID;
         System.out.println("Enter name: ");
-        this.name = System.console().readLine();
+        this.name = "test";
         System.out.println("Enter IP-Address: ");
-        this.IPAddres = System.console().readLine();
+        this.IPAddres = "192.168.1.2";
         Discovery();
     }
 
