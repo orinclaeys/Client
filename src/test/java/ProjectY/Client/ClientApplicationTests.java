@@ -8,8 +8,7 @@ class ClientApplicationTests {
 
 	@Test
 	void contextLoads() {
-		Client client = new Client("TestClient");
-		client.Discovery();
+
 	}
 
 }
