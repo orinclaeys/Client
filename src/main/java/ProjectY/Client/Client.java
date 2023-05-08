@@ -1,15 +1,16 @@
 package ProjectY.Client;
 
-
 import ProjectY.HttpComm.HttpModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Vector;
 
 import static java.lang.Math.abs;
 
@@ -21,6 +22,7 @@ public class Client {
     private String IPAddres;
     private HttpModule httpModule = new HttpModule(this);
     private String ServerIP = "192.168.1.1";
+    private Vector<FileLog> fileLogList = new Vector<>();
 
     public Client() {
         this.currentID = Hash("Test");
@@ -30,7 +32,8 @@ public class Client {
         this.name = "test";
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
-        Discovery();
+        //Discovery();
+        verifyFiles();
     }
 
     public boolean updateNextID(String name){
@@ -172,5 +175,23 @@ public class Client {
         System.out.println("NextID: "+this.nextID);
         System.out.println("PreviousID: "+this.previousID);
         System.out.println("-------------------");
+    }
+
+    public void verifyFiles(){
+        File directory = new File("src/main/java/ProjectY/Client/Files");
+        File[] contentOfDirectory = directory.listFiles();
+        for (File object : contentOfDirectory) {
+            if (object.isFile()) {
+                System.out.println("Verify file name: " + object.getName());
+                FileLog fileLog = new FileLog(object.getName(), Hash(object.getName()));
+                fileLog.setOwner(this.currentID);
+                fileLogList.add(fileLog);
+            }
+        }
+        JSONObject message = new JSONObject();
+        message.put("Sender", "Client");
+        message.put("Message", "Replication");
+        message.put("FileLogList", fileLogList);
+        httpModule.sendReplication(message);
     }
 }
