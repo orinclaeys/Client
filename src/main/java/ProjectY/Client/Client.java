@@ -11,6 +11,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.abs;
 
@@ -25,15 +26,20 @@ public class Client {
     private Vector<FileLog> fileLogList = new Vector<>();
 
     public Client() {
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         this.currentID = Hash("Test");
         this.previousID = this.currentID;
         this.nextID = this.currentID;
         System.out.println("Enter name: ");
-        this.name = "test";
+        this.name = System.console().readLine();
         System.out.println("Enter IP-Address: ");
-        this.IPAddres = "192.168.1.2";
-        //Discovery();
-        verifyFiles();
+        this.IPAddres = System.console().readLine();
+        Discovery();
+        //verifyFiles();
     }
 
     public boolean updateNextID(String name){
