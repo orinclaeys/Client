@@ -1,15 +1,16 @@
 package ProjectY.Client;
 
-
 import ProjectY.HttpComm.HttpModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Vector;
 
 import static java.lang.Math.abs;
 
@@ -21,6 +22,7 @@ public class Client {
     private String IPAddres;
     private HttpModule httpModule = new HttpModule(this);
     private String ServerIP = "192.168.1.1";
+    private Vector<FileLog> fileLogList = new Vector<>();
 
     public Client() {
         this.currentID = Hash("Test");
@@ -30,7 +32,8 @@ public class Client {
         this.name = "test";
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
-        Discovery();
+        //Discovery();
+        verifyFiles();
     }
 
     public boolean updateNextID(String name){
@@ -90,41 +93,43 @@ public class Client {
     public void shutdown() throws IOException, InterruptedException {
         HttpClient httpclient = HttpClient.newHttpClient();
 
+        // Get the IP and ID of the previous and next node.
         HttpRequest requestPreviousIPAddress = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/getIPAddress/"+ getPreviousId()))
                 .build();
-
         HttpResponse<String> responsePreviousIPAddress =
                 httpclient.send(requestPreviousIPAddress, HttpResponse.BodyHandlers.ofString());
+        // Test
+        System.out.println(responsePreviousIPAddress.body());
 
         HttpRequest requestNextIPAddress = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/getIPAddress/"+ getNextId()))
                 .build();
-
         HttpResponse<String> responseNextIPAddress =
                 httpclient.send(requestNextIPAddress, HttpResponse.BodyHandlers.ofString());
+        // Test
         System.out.println(responseNextIPAddress.body());
 
-        /*HttpRequest requestPreviousNode = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+responsePreviousIPAddress.body()+":8080/ProjectY/Shutdown/PreviousNode/"+ getNextId()))
+        // Update the next and previous node parameters.
+        HttpRequest requestPreviousNode = HttpRequest.newBuilder()
+                .uri(URI.create(responsePreviousIPAddress.body()+":8080/ProjectY/Update/PreviousNode/"+ getNextId()))
                 .build();
-
         HttpResponse<String> responsePreviousNode =
                 httpclient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
 
         HttpRequest requestNextNode = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+responseNextIPAddress.body()+":8080/ProjectY/Shutdown/NextNode/"+ getPreviousId()))
+                .uri(URI.create(responseNextIPAddress.body()+":8080/ProjectY/Update/NextNode/"+ getPreviousId()))
                 .build();
-
         HttpResponse<String> responseNextNode =
                 httpclient.send(requestNextNode, HttpResponse.BodyHandlers.ofString());
 
+        // Remove the node from the naming server's map.
         HttpRequest requestDeleteNode = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/deleteNode"+this.name))
                 .build();
-
         HttpResponse<String> responseDeleteNode =
-                httpclient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());*/
+                httpclient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());
+
     }
     public void failure(String nodeName) throws IOException, InterruptedException {
         HttpClient httpclient = HttpClient.newHttpClient();
@@ -172,5 +177,23 @@ public class Client {
         System.out.println("NextID: "+this.nextID);
         System.out.println("PreviousID: "+this.previousID);
         System.out.println("-------------------");
+    }
+
+    public void verifyFiles(){
+        File directory = new File("src/main/java/ProjectY/Client/Files");
+        File[] contentOfDirectory = directory.listFiles();
+        for (File object : contentOfDirectory) {
+            if (object.isFile()) {
+                System.out.println("Verify file name: " + object.getName());
+                FileLog fileLog = new FileLog(object.getName(), Hash(object.getName()));
+                fileLog.setOwner(this.currentID);
+                fileLogList.add(fileLog);
+            }
+        }
+        JSONObject message = new JSONObject();
+        message.put("Sender", "Client");
+        message.put("Message", "Replication");
+        message.put("FileLogList", fileLogList);
+        httpModule.sendReplication(message);
     }
 }

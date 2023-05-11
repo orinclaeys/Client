@@ -60,5 +60,6 @@ public class HttpModule{
 
 
     }
+    public void sendReplication(JSONObject message){}
 }
 
