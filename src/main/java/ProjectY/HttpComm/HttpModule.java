@@ -23,8 +23,8 @@ public class HttpModule{
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://127.0.0.1:8080/ProjectY/Discovery"))
-                    //.uri(URI.create("http://172.30.0.1:8080/ProjectY/Discovery"))
+                    //.uri(URI.create("http://127.0.0.1:8080/ProjectY/Discovery"))
+                    .uri(URI.create("http://G4c1.6dist:8080/ProjectY/Discovery"))
                     .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
                     .header("Content-type", "application/json")
                     .timeout(Duration.ofSeconds(1000))
