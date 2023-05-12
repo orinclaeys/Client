@@ -21,23 +21,20 @@ public class Client {
     private int currentID;
     private String name;
     private String IPAddres;
-    private HttpModule httpModule = new HttpModule(this);
+    private HttpModule httpModule = new HttpModule();
     private String ServerIP = "192.168.1.1";
     private Vector<FileLog> fileLogList = new Vector<>();
 
     public Client() {
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        this.currentID = Hash("Test");
-        this.previousID = this.currentID;
-        this.nextID = this.currentID;
         System.out.println("Enter name: ");
         this.name = System.console().readLine();
+        //this.name="Test";
+        this.currentID = Hash(this.name);
+        this.previousID = this.currentID;
+        this.nextID = this.currentID;
         System.out.println("Enter IP-Address: ");
         this.IPAddres = System.console().readLine();
+        //this.IPAddres = "172.30.0.4";
         Discovery();
         //verifyFiles();
     }
@@ -78,64 +75,33 @@ public class Client {
             }
         }
     }
-    public void setServerIP(String IP){this.ServerIP = IP;}
     public int getPreviousId() {return previousID;}
-    public void setPreviousId(int previousId) {
-        previousID = previousId;}
+    public void setPreviousId(int previousId) {previousID = previousId;}
     public int getNextId() {return nextID;}
-    public void setNextId(int nextId) {
-        nextID = nextId;}
+    public void setNextId(int nextId) {nextID = nextId;}
     public int getCurrentId() {return currentID;}
-    public void setCurrentId(int currentId) {
-        currentID = currentId;}
-    public String getName() {return name;}
-    public void setName(String name) {this.name = name;}
     private int Hash(String name){
         double max = 2147483647;
         double min = -2147483647;
         return (int) ((name.hashCode()+max)*(32768/(max+abs(min))));
     }
 
-    public void shutdown() throws IOException, InterruptedException {
-        HttpClient httpclient = HttpClient.newHttpClient();
-
-        // Get the IP and ID of the previous and next node.
-        HttpRequest requestPreviousIPAddress = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/getIPAddress/"+ getPreviousId()))
-                .build();
-        HttpResponse<String> responsePreviousIPAddress =
-                httpclient.send(requestPreviousIPAddress, HttpResponse.BodyHandlers.ofString());
-        // Test
-        System.out.println(responsePreviousIPAddress.body());
-
-        HttpRequest requestNextIPAddress = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/getIPAddress/"+ getNextId()))
-                .build();
-        HttpResponse<String> responseNextIPAddress =
-                httpclient.send(requestNextIPAddress, HttpResponse.BodyHandlers.ofString());
-        // Test
-        System.out.println(responseNextIPAddress.body());
+    public void shutdown(){
+        System.out.println("Client: Shutting down...");
+        // Getting IP-Addresses of previous and next node
+        System.out.println("Client: Shutdown: Obtaining IP-adresses");
+        String ipPreviousNode = httpModule.sendIPRequest(previousID);
+        String ipNextNode = httpModule.sendIPRequest(nextID);
 
         // Update the next and previous node parameters.
-        HttpRequest requestPreviousNode = HttpRequest.newBuilder()
-                .uri(URI.create(responsePreviousIPAddress.body()+":8080/ProjectY/Update/PreviousNode/"+ getNextId()))
-                .build();
-        HttpResponse<String> responsePreviousNode =
-                httpclient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
-
-        HttpRequest requestNextNode = HttpRequest.newBuilder()
-                .uri(URI.create(responseNextIPAddress.body()+":8080/ProjectY/Update/NextNode/"+ getPreviousId()))
-                .build();
-        HttpResponse<String> responseNextNode =
-                httpclient.send(requestNextNode, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Client: Shutdown: Updating previous and next node");
+        httpModule.sendUpdatePreviousNode(ipPreviousNode,nextID);
+        httpModule.sendUpdateNextNode(ipNextNode,previousID);
 
         // Remove the node from the naming server's map.
-        HttpRequest requestDeleteNode = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/deleteNode"+this.name))
-                .build();
-        HttpResponse<String> responseDeleteNode =
-                httpclient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());
-
+        System.out.println("Client: Shutdown: Notifying server");
+        httpModule.sendShutdown(this.name);
+        System.out.println("Client: Shutdown completed");
     }
     public void failure(String nodeName) throws IOException, InterruptedException {
         HttpClient httpclient = HttpClient.newHttpClient();
