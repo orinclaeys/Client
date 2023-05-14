@@ -110,7 +110,6 @@ public class Client {
         // Test
         System.out.println(responseNextIPAddress.body());
 
-        /*
         // Update the next and previous node parameters.
         HttpRequest requestPreviousNode = HttpRequest.newBuilder()
                 .uri(URI.create(responsePreviousIPAddress.body()+":8080/ProjectY/Update/PreviousNode/"+ getNextId()))
@@ -130,7 +129,7 @@ public class Client {
                 .build();
         HttpResponse<String> responseDeleteNode =
                 httpclient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());
-*/
+
     }
     public void failure(String nodeName) throws IOException, InterruptedException {
         HttpClient httpclient = HttpClient.newHttpClient();
@@ -196,10 +195,5 @@ public class Client {
         message.put("Message", "Replication");
         message.put("FileLogList", fileLogList);
         httpModule.sendReplication(message);
-    }
-
-    public FileLog replication(FileLog fileLog){
-        fileLog.addReplicatedOwner(this.IPAddres);
-        return fileLog;
     }
 }

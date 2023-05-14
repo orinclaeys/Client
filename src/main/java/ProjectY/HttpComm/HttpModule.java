@@ -61,7 +61,5 @@ public class HttpModule{
 
     }
     public void sendReplication(JSONObject message){}
-    public void sendReplicationResponse(JSONObject response){
-    }
 }
 
