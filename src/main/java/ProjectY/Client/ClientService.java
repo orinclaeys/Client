@@ -1,11 +1,15 @@
 package ProjectY.Client;
 
+import ProjectY.HttpComm.HttpModule;
 import org.json.simple.JSONObject;
+
+import java.util.Vector;
 
 
 public class ClientService extends Thread {
 
     private Client client;
+    private HttpModule httpModule = new HttpModule(client);
 
     public ClientService(Client client) {this.client = client;}
 
@@ -45,6 +49,20 @@ public class ClientService extends Thread {
         }
     }
 
+    public void handleReplication(JSONObject message) {
+        JSONObject response = new JSONObject();
+        if (message.get("Sender").equals("NamingServer")){
+            if (message.get("Message").equals("Replication")){
+                FileLog fileLog;
+                fileLog = (FileLog) message.get("FileLog");
+                client.replication(fileLog);
 
+                response.put("Sender", "Client");
+                response.put("Message", "Replication Response");
+                response.put("FileLog", fileLog);
+            }
+        }
+        httpModule.sendReplicationResponse(response);
+    }
 
 }
