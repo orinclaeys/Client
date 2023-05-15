@@ -23,7 +23,7 @@ public class Client {
     private int currentID;
     private String name;
     private String IPAddres;
-    private HttpModule httpModule = new HttpModule(this);
+    private HttpModule httpModule = new HttpModule();
     private String ServerIP = "192.168.1.1";
     private Vector<FileLog> fileLogList = new Vector<>();
 
