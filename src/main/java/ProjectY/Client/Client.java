@@ -2,6 +2,7 @@ package ProjectY.Client;
 
 import ProjectY.HttpComm.HttpModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.File;
@@ -191,11 +192,14 @@ public class Client {
             }
         }
         JSONObject message = new JSONObject();
-        JSONObject fileLogListObject = new JSONObject();
+        JSONArray fileLogListJSON = new JSONArray();
+        for (FileLog fileLog : fileLogList) {
+            fileLogListJSON.add(fileLog.toJSON());
+        }
 
         message.put("Sender", "Client");
         message.put("Message", "Replication");
-        message.put("FileLogList", fileLogList);
+        message.put("FileLogList", fileLogListJSON);
         httpModule.sendReplication(message);
     }
 

@@ -9,7 +9,6 @@ class ClientApplicationTests {
 	@Test
 	void replication() {
 		Client client1 = new Client();
-		Client client2 = new Client();
 
 	}
 

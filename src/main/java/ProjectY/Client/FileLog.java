@@ -9,8 +9,8 @@ public class FileLog {
         private String fileName;
         private int fileID;
         private int owner;
-        private Vector<String> replicatedOwners;
-        private Vector<String> downloadLocations;
+        private Vector<String> replicatedOwners = new Vector<>();
+        private Vector<String> downloadLocations = new Vector<>();
 
         public FileLog(String fileName, int fileID) {
             this.fileName = fileName;
@@ -20,23 +20,16 @@ public class FileLog {
 
         public void addReplicatedOwner(String replicatedOwner) {this.replicatedOwners.add(replicatedOwner);}
 
-
-
-}
         public JSONObject toJSON(){
             JSONObject response = new JSONObject();
             response.put("fileName",fileName);
             response.put("fileID",fileID);
             response.put("owner",owner);
             JSONArray replicatedOwnerJSON = new JSONArray();
-            for(int i = 0;i<replicatedOwners.size();i++){
-                replicatedOwnerJSON.add(i,replicatedOwners.get(i));
-            }
+            replicatedOwnerJSON.addAll(replicatedOwners);
             response.put("replicatedOwners",replicatedOwnerJSON);
             JSONArray downloadLocationsJSON = new JSONArray();
-            for(int i = 0;i<downloadLocations.size();i++){
-                replicatedOwnerJSON.add(i,downloadLocations.get(i));
-            }
+            replicatedOwnerJSON.addAll(downloadLocations);
             response.put("downloadLocation",downloadLocationsJSON);
             return response;
         }

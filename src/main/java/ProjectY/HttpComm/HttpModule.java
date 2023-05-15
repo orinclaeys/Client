@@ -60,6 +60,8 @@ public class HttpModule{
 
 
     }
-    public void sendReplication(JSONObject message){}
+    public void sendReplication(JSONObject message){
+        System.out.println("HttpModule: sendReplication: " + message);
+    }
 }
 
