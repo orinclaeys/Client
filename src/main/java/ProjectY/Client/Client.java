@@ -23,7 +23,7 @@ public class Client {
     private int currentID;
     private String name;
     private String IPAddres;
-    private HttpModule httpModule = new HttpModule(this);
+    private HttpModule httpModule = new HttpModule();
     private String ServerIP = "192.168.1.1";
     private Vector<FileLog> fileLogList = new Vector<>();
 
@@ -134,8 +134,8 @@ public class Client {
                 httpclient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());
 
     }
-    public void failure(String nodeName) throws IOException, InterruptedException {
-        HttpClient httpclient = HttpClient.newHttpClient();
+    public void Failure(String nodeName) throws IOException, InterruptedException {
+/*        HttpClient httpclient = HttpClient.newHttpClient();
 
         // Get the IP and ID of the previous and next nodes.
         HttpRequest requestFailure = HttpRequest.newBuilder()
@@ -159,6 +159,14 @@ public class Client {
                 .build();
         HttpResponse<String> responseNextNode =
                 httpclient.send(requestNextNode, HttpResponse.BodyHandlers.ofString());
+*/
+
+        System.out.println("Client: Failure: ");
+        JSONObject message = new JSONObject();
+        message.put("Failed node ID", Hash(nodeName));
+        message.put("Failed node name",nodeName);
+        httpModule.sendFailure(message);
+
     }
     public void Discovery(){
         System.out.println("Client: Discovery...");
