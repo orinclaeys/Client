@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ClientApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void replication() {
+		Client client1 = new Client();
+		Client client2 = new Client();
 
 	}
 

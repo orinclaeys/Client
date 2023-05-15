@@ -196,4 +196,8 @@ public class Client {
         message.put("FileLogList", fileLogList);
         httpModule.sendReplication(message);
     }
+
+    public void replication(FileLog fileLog) {
+        fileLog.addReplicatedOwner(this.IPAddres);
+    }
 }

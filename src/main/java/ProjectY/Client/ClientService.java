@@ -49,7 +49,7 @@ public class ClientService extends Thread {
         }
     }
 
-    public void handleReplication(JSONObject message) {
+    public JSONObject handleReplication(JSONObject message) {
         JSONObject response = new JSONObject();
         if (message.get("Sender").equals("NamingServer")){
             if (message.get("Message").equals("Replication")){
@@ -62,7 +62,7 @@ public class ClientService extends Thread {
                 response.put("FileLog", fileLog);
             }
         }
-        httpModule.sendReplicationResponse(response);
+        return response;
     }
 
 }
