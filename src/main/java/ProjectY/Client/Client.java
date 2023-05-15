@@ -11,6 +11,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 import static java.lang.Math.abs;
@@ -205,5 +207,27 @@ public class Client {
 
     public void replication(FileLog fileLog) {
         fileLog.addReplicatedOwner(this.IPAddres);
+    }
+
+    // Check the local folder for changes at regular intervals
+    public void replicationUpdate(){
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                File folder = new File("src/main/java/ProjectY/Client/Files");
+                File[] files = folder.listFiles();
+
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            System.out.println("Client: New file detected: " + file.getName());
+                            // HttpModule oproepen
+                        }
+                    }
+                }
+            }
+        }, 0, 5000);
+
     }
 }
