@@ -45,13 +45,6 @@ public class RESTControllerClient {
         ClientApplication.client.setPreviousId(PreviousId);
     }
 
-/*
-    @PostMapping(path = "Failure/Response")
-    public void failureResponse(@RequestBody JSONObject repsonse) throws IOException, InterruptedException {
-        ClientService clientService = new ClientService(ClientApplication.client);
-        clientService.handleFailureResponse(repsonse);
-    }
-*/
 
     @PutMapping(path = "Replication")
     public JSONObject replication(@RequestBody JSONObject message) {
