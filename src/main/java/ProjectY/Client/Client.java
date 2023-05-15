@@ -191,6 +191,8 @@ public class Client {
             }
         }
         JSONObject message = new JSONObject();
+        JSONObject fileLogListObject = new JSONObject();
+
         message.put("Sender", "Client");
         message.put("Message", "Replication");
         message.put("FileLogList", fileLogList);

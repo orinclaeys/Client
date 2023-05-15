@@ -1,5 +1,7 @@
 package ProjectY.Client;
 
+import org.json.simple.JSONObject;
+
 import java.util.Vector;
 
 public class FileLog {
@@ -16,5 +18,7 @@ public class FileLog {
         public void setOwner(int ownerID) {this.owner = ownerID;}
 
         public void addReplicatedOwner(String replicatedOwner) {this.replicatedOwners.add(replicatedOwner);}
+
+
 
 }
