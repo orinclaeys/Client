@@ -9,7 +9,7 @@ public class FileLog {
         private String fileName;
         private int fileID;
         private int owner;
-        private Vector<Integer> replicatedOwners;
+        private Vector<String> replicatedOwners;
         private Vector<String> downloadLocations;
 
         public FileLog(String fileName, int fileID) {
@@ -18,6 +18,11 @@ public class FileLog {
         }
         public void setOwner(int ownerID) {this.owner = ownerID;}
 
+        public void addReplicatedOwner(String replicatedOwner) {this.replicatedOwners.add(replicatedOwner);}
+
+
+
+}
         public JSONObject toJSON(){
             JSONObject response = new JSONObject();
             response.put("fileName",fileName);

@@ -51,4 +51,9 @@ public class RESTControllerClient {
         ClientApplication.client.failure(nodeName);
     }
 
+    @PutMapping(path = "Replication")
+    public JSONObject replication(@RequestBody JSONObject message) {
+        ClientService clientService = new ClientService(ClientApplication.client);
+        return clientService.handleReplication(message);
+    }
 }
