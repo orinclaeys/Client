@@ -9,6 +9,7 @@ import java.util.Vector;
 public class ClientService extends Thread {
 
     private Client client;
+    private HttpModule httpModule = new HttpModule();
 
     public ClientService(Client client) {this.client = client;}
 
@@ -54,11 +55,18 @@ public class ClientService extends Thread {
             if (message.get("Message").equals("Replication")){
                 FileLog fileLog;
                 fileLog = (FileLog) message.get("FileLog");
-                client.replication(fileLog);
+                client.replication(fileLog,(String) message.get("IP"));
 
                 response.put("Sender", "Client");
                 response.put("Message", "Replication Response");
                 response.put("FileLog", fileLog);
+            }
+        }
+        if (message.get("Sender").equals("Client")){
+            if (message.get("Message").equals("Replication")){
+                FileLog fileLog = (FileLog) message.get("Filelog");
+                client.replication(fileLog,(String) message.get("IP"));
+
             }
         }
         return response;

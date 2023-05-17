@@ -19,7 +19,21 @@ public class FileLog {
         public void setOwner(int ownerID) {this.owner = ownerID;}
 
         public void addReplicatedOwner(String replicatedOwner) {this.replicatedOwners.add(replicatedOwner);}
+        public Vector<String> getReplicatedOwners(){
+            return this.replicatedOwners;
+        }
+        public int getOwner() {
+            return owner;
+        }
 
+        public String getFileName(){
+            return fileName;
+        }
+
+        public void updateReplicatedOwner(String oldReplicatedOwner, String newReplicatedOwner) {
+            replicatedOwners.remove(oldReplicatedOwner);
+            addReplicatedOwner(newReplicatedOwner);
+        }
         public JSONObject toJSON(){
             JSONObject response = new JSONObject();
             response.put("fileName",fileName);

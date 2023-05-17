@@ -1,6 +1,7 @@
 package ProjectY.Client;
 
 import ProjectY.HttpComm.HttpModule;
+import ProjectY.HttpComm.TcpModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,6 +25,7 @@ public class Client {
     private String name;
     private String IPAddres;
     private HttpModule httpModule = new HttpModule();
+    private TcpModule tcpModule = new TcpModule();
     private String ServerIP = "192.168.1.1";
     private Vector<FileLog> fileLogList = new Vector<>();
 
@@ -105,6 +107,35 @@ public class Client {
         httpModule.sendUpdatePreviousNode(ipPreviousNode,nextID);
         httpModule.sendUpdateNextNode(ipNextNode,previousID);
 
+        // Get the replicated files and update the previous node
+        Vector<String> replicatedFiles = new Vector<>();
+        Vector<String> replicatedOwnerFiles = new Vector<>();
+        String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
+        for (int i=0;fileLogList.size()<i;i++) {
+            for (int j=0;fileLogList.get(i).getReplicatedOwners().size()<j;j++) {
+                if (fileLogList.get(i).getReplicatedOwners().get(j) == this.IPAddres) {
+                    if (fileLogList.get(i).getOwner() == previousID) {
+                        JSONObject message = new JSONObject();
+                        message.put("Sender","Client");
+                        message.put("Message","Replication");
+                        message.put("IP",this.IPAddres);
+                        message.put("fileLog",fileLogList.get(i));
+                        httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));
+                    }
+                    else {
+                        JSONObject message = new JSONObject();
+                        message.put("Sender","Client");
+                        message.put("Message","Replication");
+                        message.put("IP",this.IPAddres);
+                        message.put("fileLog",fileLogList.get(i));
+                        httpModule.sendReplication(message,ipPreviousPreviousNode);
+                    }
+                }
+            }
+        }
+
+
+
         // Remove the node from the naming server's map.
         System.out.println("Client: Shutdown: Notifying server");
         httpModule.sendShutdown(this.name);
@@ -159,14 +190,15 @@ public class Client {
         message.put("Sender", "Client");
         message.put("Message", "Replication");
         message.put("FileLogList", fileLogListJSON);
-        httpModule.sendReplication(message);
+        httpModule.sendReplication(message, ServerIP);
     }
 
-    public void replication(FileLog fileLog) {
+    public void replication(FileLog fileLog, String IP) {
         fileLog.addReplicatedOwner(this.IPAddres);
+        this.tcpModule.sendReplicatedFiles(IP, fileLog.getFileName());
     }
 
-    // Check the local folder for changes at regular intervals
+    // Check the local folder for changes at regular time intervals
     public void replicationUpdate(){
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -179,6 +211,8 @@ public class Client {
                     for (File file : files) {
                         if (file.isFile()) {
                             System.out.println("Client: New file detected: " + file.getName());
+                            // Moet aan de list worden toegevoegd!
+                            // fileLogList.add(fileLog);
                             // HttpModule oproepen
                         }
                     }
