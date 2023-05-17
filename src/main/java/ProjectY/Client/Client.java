@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -179,6 +180,7 @@ public class Client {
                 FileLog fileLog = new FileLog(object.getName(), Hash(object.getName()));
                 fileLog.setOwner(this.currentID);
                 fileLogList.add(fileLog);
+                System.out.println(fileLogList);
             }
         }
         for (FileLog fileLog : fileLogList) {
@@ -216,15 +218,26 @@ public class Client {
                 if (files != null) {
                     for (File file : files) {
                         if (file.isFile()) {
-                            System.out.println("Client: New file detected: " + file.getName());
-                            // Moet aan de list worden toegevoegd!
-                            // fileLogList.add(fileLog);
-                            // HttpModule oproepen
+                            if (!getFileNamesList(fileLogList).contains(file.getName())) {
+                                System.out.println("Client: New file detected: " + file.getName());
+                                FileLog fileLog = new FileLog(file.getName(), Hash(file.getName()));
+                                fileLog.setOwner(currentID);
+                                fileLogList.add(fileLog);
+                                replication(fileLog, ServerIP);
+                            }
                         }
                     }
                 }
             }
         }, 0, 5000);
 
+    }
+
+    public Vector<String> getFileNamesList(Vector<FileLog> fileLogList) {
+        Vector <String> fileNamesList = new Vector<>();
+        for (int i=0; i < fileLogList.size(); i++){
+            fileNamesList.add(fileLogList.get(i).getFileName());
+        }
+        return fileNamesList;
     }
 }
