@@ -110,31 +110,12 @@ public class Client {
         httpModule.sendShutdown(this.name);
         System.out.println("Client: Shutdown completed");
     }
-    public void failure(String nodeName) throws IOException, InterruptedException {
-        HttpClient httpclient = HttpClient.newHttpClient();
-
-        // Get the IP and ID of the previous and next nodes.
-        HttpRequest requestFailure = HttpRequest.newBuilder()
-                .uri(URI.create("localhost:8080/ProjectY/NamingServer/failure/"+nodeName))
-                .build();
-        HttpResponse<String> response =
-                httpclient.send(requestFailure, HttpResponse.BodyHandlers.ofString());
-
-        JSONObject message = new ObjectMapper().readValue(response.body(), JSONObject.class);
-
-        // Send the ID of the next node to the previous node.
-        HttpRequest requestPreviousNode = HttpRequest.newBuilder()
-                .uri(URI.create(message.get("previousIP")+":8080/ProjectY/Update/PreviousNode/"+message.get("nextId")))
-                .build();
-        HttpResponse<String> responsePreviousNode =
-                httpclient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
-
-        // Send the ID of the previous node to the next node.
-        HttpRequest requestNextNode = HttpRequest.newBuilder()
-                .uri(URI.create(message.get("nextIP")+":8080/ProjectY/Update/NextNode/"+message.get("previousId")))
-                .build();
-        HttpResponse<String> responseNextNode =
-                httpclient.send(requestNextNode, HttpResponse.BodyHandlers.ofString());
+    public void Failure(String nodeName) throws IOException, InterruptedException {
+        System.out.println("Client: Failure: ");
+        JSONObject message = new JSONObject();
+        message.put("Failed node ID", Hash(nodeName));
+        message.put("Failed node name",nodeName);
+        httpModule.sendFailure(message);
     }
     public void Discovery(){
         System.out.println("Client: Discovery...");

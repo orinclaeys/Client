@@ -9,7 +9,6 @@ import java.util.Vector;
 public class ClientService extends Thread {
 
     private Client client;
-    private HttpModule httpModule = new HttpModule(client);
 
     public ClientService(Client client) {this.client = client;}
 
@@ -63,6 +62,20 @@ public class ClientService extends Thread {
             }
         }
         return response;
+    }
+
+    public void handleFailureResponse(JSONObject response){
+        System.out.println("Client: Handle failure repsonse");
+        if(response.get("nextId").equals(client.getCurrentId())){
+            client.setPreviousId((int) response.get("PreviousId"));
+            System.out.println("PreviousId updated on next node");
+        }
+        else if (response.get("previousId").equals(client.getCurrentId())){
+            client.setNextId((int) response.get("NextId"));
+            System.out.println("NextId updated on previous node");
+        }
+        else
+            System.out.println("Nothing updated!");
     }
 
 }

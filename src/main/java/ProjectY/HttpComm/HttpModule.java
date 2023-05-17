@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -60,7 +61,7 @@ public class HttpModule{
 
 
     }
-    public void sendReplication(JSONObject message){}
+
     public String sendIPRequest(int ID){
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -75,7 +76,29 @@ public class HttpModule{
         }
 
     }
-    public void sendFailure(JSONObject message){System.out.println("HttpModule: sendReplication: " + message);}
+    public void sendFailure(JSONObject message) throws IOException, InterruptedException {
+        try {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://"+serverIP+":8080/ProjectY/Failure"))
+                    .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
+                    .header("Content-type", "application/json")
+                    .timeout(Duration.ofSeconds(1000))
+                    .build();
+            System.out.println("Client: Sending to server...");
+
+            HttpResponse<String> Stringresponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            ObjectMapper mapper = new ObjectMapper();
+            JSONObject response = mapper.readValue(Stringresponse.body(),JSONObject.class);
+            System.out.println("Client: Server response: "+response.toJSONString());
+            ClientService service = new ClientService(node);
+            service.handleFailureResponse(response);
+
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
     public void sendUpdatePreviousNode(String IPAddress, int nextID){
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest requestPreviousNode = HttpRequest.newBuilder()
@@ -110,7 +133,10 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
 
-    }
 
+    }
+    public void sendReplication(JSONObject message){
+        System.out.println("HttpModule: sendReplication: " + message);
+    }
 }
 
