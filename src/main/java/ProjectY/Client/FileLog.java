@@ -51,7 +51,6 @@ public class FileLog {
         public int getFileID() {return fileID;}
 
         public Vector<String> getDownloadLocations() {return downloadLocations;}
-}
     @Override
     public String toString() {
         return "FileLog{" +
