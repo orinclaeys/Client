@@ -13,7 +13,7 @@ public class RESTControllerClient {
 
     @PostMapping(path = "Discovery/Response")
     public void discoveryRespons(@RequestBody JSONObject response) {
-        ClientService clientService = new ClientService(ClientApplication.client);
+        ClientService clientService = new ClientService();
         System.out.println("Discovery Response received");
         System.out.println(response);
         clientService.handleDiscoveryRespons(response);
@@ -21,7 +21,7 @@ public class RESTControllerClient {
 
     @PutMapping(path = "Shutdown/{nodeName}/{IPAddress}")
     public void shutdown(@PathVariable("nodeName") String nodeName, @PathVariable("IPAddress") String IPAddress) throws IOException, InterruptedException {
-        ClientService clientService = new ClientService(ClientApplication.client);
+        ClientService clientService = new ClientService();
         ClientApplication.client.shutdown();
     }
 
@@ -35,20 +35,20 @@ public class RESTControllerClient {
 
     @PutMapping("Update/PreviousNode/{NextId}")
     public void updatePreviousNode(@PathVariable("NextId") int NextId) {
-        ClientService clientService = new ClientService(ClientApplication.client);
+        ClientService clientService = new ClientService();
         ClientApplication.client.setNextId(NextId);
     }
 
     @PutMapping("Update/NextNode/{PreviousId}")
     public void updateNextNode(@PathVariable("Previous") int PreviousId) {
-        ClientService clientService = new ClientService(ClientApplication.client);
+        ClientService clientService = new ClientService();
         ClientApplication.client.setPreviousId(PreviousId);
     }
 
 
     @PutMapping(path = "Replication")
     public JSONObject replication(@RequestBody JSONObject message) {
-        ClientService clientService = new ClientService(ClientApplication.client);
+        ClientService clientService = new ClientService();
         return clientService.handleReplication(message);
     }
 }

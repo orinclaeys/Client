@@ -8,10 +8,10 @@ import java.util.Vector;
 
 public class ClientService extends Thread {
 
-    private Client client;
+    private Client client =ClientApplication.client;
     private HttpModule httpModule = new HttpModule();
 
-    public ClientService(Client client) {this.client = client;}
+    public ClientService() {}
 
     public JSONObject handleDiscovery(String name) {
         JSONObject response = new JSONObject();

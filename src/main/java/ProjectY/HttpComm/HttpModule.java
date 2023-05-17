@@ -38,7 +38,7 @@ public class HttpModule{
             ObjectMapper mapper = new ObjectMapper();
             JSONObject response = mapper.readValue(Stringresponse.body(),JSONObject.class);
             System.out.println("Client: Server response: "+response.toJSONString());
-            ClientService service = new ClientService(node);
+            ClientService service = new ClientService();
             service.handleDiscoveryRespons(response);
             Vector<String> IPlist = new Vector<String>((ArrayList<String>) response.get("IPlist"));
             for (String ipAddr : IPlist) {
@@ -90,7 +90,7 @@ public class HttpModule{
             ObjectMapper mapper = new ObjectMapper();
             JSONObject response = mapper.readValue(Stringresponse.body(),JSONObject.class);
             System.out.println("Client: Server response: "+response.toJSONString());
-            ClientService service = new ClientService(node);
+            ClientService service = new ClientService();
             service.handleFailureResponse(response);
 
         } catch (IOException | InterruptedException e) {
