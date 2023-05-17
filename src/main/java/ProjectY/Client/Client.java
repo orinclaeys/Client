@@ -181,16 +181,22 @@ public class Client {
                 fileLogList.add(fileLog);
             }
         }
-        JSONObject message = new JSONObject();
-        JSONArray fileLogListJSON = new JSONArray();
         for (FileLog fileLog : fileLogList) {
-            fileLogListJSON.add(fileLog.toJSON());
-        }
+            JSONObject message = new JSONObject();
+            JSONArray replicatedOwners = new JSONArray();
+            JSONArray downloadLocations = new JSONArray();
+            replicatedOwners.addAll(fileLog.getReplicatedOwners());
+            downloadLocations.addAll(fileLog.getDownloadLocations());
 
-        message.put("Sender", "Client");
-        message.put("Message", "Replication");
-        message.put("FileLogList", fileLogListJSON);
-        httpModule.sendReplication(message, ServerIP);
+            message.put("Sender", "Client");
+            message.put("Message", "Replication");
+            message.put("fileName", fileLog.getFileName());
+            message.put("fileID",fileLog.getFileID());
+            message.put("owner",fileLog.getOwner());
+            message.put("replicatedOwners",replicatedOwners);
+            message.put("downloadLocations",downloadLocations);
+            httpModule.sendReplication(message);
+        }
     }
 
     public void replication(FileLog fileLog, String IP) {

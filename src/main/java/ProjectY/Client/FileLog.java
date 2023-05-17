@@ -34,18 +34,8 @@ public class FileLog {
             replicatedOwners.remove(oldReplicatedOwner);
             addReplicatedOwner(newReplicatedOwner);
         }
-        public JSONObject toJSON(){
-            JSONObject response = new JSONObject();
-            response.put("fileName",fileName);
-            response.put("fileID",fileID);
-            response.put("owner",owner);
-            JSONArray replicatedOwnerJSON = new JSONArray();
-            replicatedOwnerJSON.addAll(replicatedOwners);
-            response.put("replicatedOwners",replicatedOwnerJSON);
-            JSONArray downloadLocationsJSON = new JSONArray();
-            replicatedOwnerJSON.addAll(downloadLocations);
-            response.put("downloadLocation",downloadLocationsJSON);
-            return response;
-        }
 
-    }
+        public int getFileID() {return fileID;}
+
+        public Vector<String> getDownloadLocations() {return downloadLocations;}
+}
