@@ -38,8 +38,8 @@ public class Client {
         this.name = "test";
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
-        //Discovery();
-        verifyFiles();
+        Discovery();
+        //verifyFiles();
     }
 
     public boolean updateNextID(String name){
