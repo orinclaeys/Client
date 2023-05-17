@@ -26,7 +26,7 @@ public class Client {
     private String IPAddres;
     private HttpModule httpModule = new HttpModule();
     private TcpModule tcpModule = new TcpModule();
-    private String ServerIP = "192.168.1.1";
+    public static String ServerIP = "172.30.0.5";
     private Vector<FileLog> fileLogList = new Vector<>();
 
     public Client() {
