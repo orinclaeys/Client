@@ -39,8 +39,12 @@ public class Client {
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
         this.IPAddres = System.console().readLine();
-        Discovery();
+        //Discovery();
         //verifyFiles();
+    }
+
+    public void initialize(){
+        Discovery();
     }
 
     public boolean updateNextID(String name){

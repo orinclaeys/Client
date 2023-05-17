@@ -8,7 +8,7 @@ import java.util.Vector;
 
 public class ClientService extends Thread {
 
-    private Client client =ClientApplication.client;
+    private final Client client = ClientApplication.client;
     private HttpModule httpModule = new HttpModule();
 
     public ClientService() {}
