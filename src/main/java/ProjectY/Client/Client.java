@@ -38,6 +38,7 @@ public class Client {
         this.name = "test";
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
+        this.IPAddres = System.console().readLine();
         Discovery();
         //verifyFiles();
     }
