@@ -31,14 +31,15 @@ public class Client {
     private Vector<FileLog> fileLogList = new Vector<>();
 
     public Client() {
-        this.currentID = Hash("Test");
-        this.previousID = this.currentID;
-        this.nextID = this.currentID;
         System.out.println("Enter name: ");
         this.name = "test";
+        this.name = System.console().readLine();
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
         this.IPAddres = System.console().readLine();
+        this.currentID = Hash(this.name);
+        this.previousID = this.currentID;
+        this.nextID = this.currentID;
         //Discovery();
         //verifyFiles();
     }
