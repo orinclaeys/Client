@@ -22,8 +22,6 @@ public class ClientService extends Thread {
             response.put("Update",true);
             response.put("YourNextID",client.getCurrentId());
             response.put("YourPreviousID",client.getCurrentId());
-            response.put("NodeType","EdgeNode");
-            this.client.NodeType="EdgeNode";
         }else {
             if (nextIDUpdated) {
                 response.put("Update", true);
@@ -34,13 +32,18 @@ public class ClientService extends Thread {
                 response.put("Update", true);
                 response.put("YourNextID", client.getCurrentId());
                 response.put("YourPreviousID", client.getPreviousId());
-                response.put("NodeType","");
             } else {
                 response.put("Update", false);
             }
         }
         if(client.getPreviousId()< client.getNextId() && client.getCurrentId() < client.getNextId()){
             client.NodeType = "NormalNode";
+        }
+        if(client.getNextId()<client.getCurrentId()){
+            client.NodeType = "EdgeNodeRight";
+        }
+        if(client.getPreviousId()>client.getCurrentId()){
+            client.NodeType = "EdgeNodeLeft";
         }
         ClientApplication.client.print();
         return response;
@@ -51,9 +54,6 @@ public class ClientService extends Thread {
             if(message.get("Update").equals(true)){
                 this.client.setPreviousId((Integer) message.get("YourPreviousID"));
                 this.client.setNextId((Integer) message.get("YourNextID"));
-                if(message.get("NodeType").equals("EdgeNode")){
-                    this.client.NodeType="EdgeNode";
-                }
             }
         }
         if(message.get("Sender").equals("NamingServer")){
@@ -64,6 +64,15 @@ public class ClientService extends Thread {
                 this.client.setPreviousId(this.client.getCurrentId());
                 System.out.println("First node in the network");
             }
+        }
+        if(client.getPreviousId()< client.getNextId() && client.getCurrentId() < client.getNextId()){
+            client.NodeType = "NormalNode";
+        }
+        if(client.getNextId()<client.getCurrentId()){
+            client.NodeType = "EdgeNodeRight";
+        }
+        if(client.getPreviousId()>client.getCurrentId()){
+            client.NodeType = "EdgeNodeLeft";
         }
     }
 
