@@ -62,7 +62,6 @@ public class Client {
                 }
             }else{
                 setNextId(newID);
-                firstNode=false;
                 return true;
             }
         }
@@ -98,7 +97,6 @@ public class Client {
                 }
             }else{
                 setPreviousId(newID);
-                firstNode=false;
                 return true;
             }
         }
