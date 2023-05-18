@@ -29,6 +29,7 @@ public class ClientService extends Thread {
         else {
             response.put("Update", false);
         }
+        ClientApplication.client.print();
         return response;
     }
     public void handleDiscoveryRespons(JSONObject message){

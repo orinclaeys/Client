@@ -167,6 +167,7 @@ public class Client {
     }
 
     public void print(){
+        System.out.println(" ");
         System.out.println("Client");
         System.out.println("-------------------");
         System.out.println("Name: "+this.name);
