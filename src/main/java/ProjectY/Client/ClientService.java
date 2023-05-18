@@ -29,6 +29,7 @@ public class ClientService extends Thread {
         else {
             response.put("Update", false);
         }
+        this.client.firstNode=false;
         ClientApplication.client.print();
         return response;
     }
@@ -39,8 +40,6 @@ public class ClientService extends Thread {
                 this.client.setPreviousId((Integer) message.get("YourPreviousID"));
                 this.client.setNextId((Integer) message.get("YourNextID"));
             }
-            this.client.firstNode=false;
-
         }
         if(message.get("Sender").equals("NamingServer")){
             System.out.println("Message received from Server");
