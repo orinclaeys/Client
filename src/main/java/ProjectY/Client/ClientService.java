@@ -18,20 +18,24 @@ public class ClientService extends Thread {
         response.put("Sender","Client");
         boolean nextIDUpdated = client.updateNextID(name);
         boolean previousIDUpdated = client.updatePreviousID(name);
-        if (nextIDUpdated){
-            response.put("Update", true);
-            response.put("YourPreviousID", client.getCurrentId());
-            response.put("YourNextID", client.getNextId());
+        if(this.client.firstNode){
+            response.put("Update",true);
+            response.put("YourNextID",client.getCurrentId());
+            response.put("YourPreviousID",client.getCurrentId());
+            this.client.firstNode=false;
+        }else {
+            if (nextIDUpdated) {
+                response.put("Update", true);
+                response.put("YourPreviousID", client.getCurrentId());
+                response.put("YourNextID", client.getNextId());
+            } else if (previousIDUpdated) {
+                response.put("Update", true);
+                response.put("YourNextID", client.getCurrentId());
+                response.put("YourPreviousID", client.getPreviousId());
+            } else {
+                response.put("Update", false);
+            }
         }
-        else if (previousIDUpdated){
-            response.put("Update", true);
-            response.put("YourNextID", client.getCurrentId());
-            response.put("YourPreviousID", client.getPreviousId());
-        }
-        else {
-            response.put("Update", false);
-        }
-        this.client.firstNode=false;
         ClientApplication.client.print();
         return response;
     }
