@@ -22,16 +22,15 @@ public class ClientService extends Thread {
             response.put("Update",true);
             response.put("YourNextID",client.getCurrentId());
             response.put("YourPreviousID",client.getCurrentId());
-        }else {
+        }else{
             if (nextIDUpdated) {
                 response.put("Update", true);
                 response.put("YourPreviousID", client.getCurrentId());
-                response.put("YourNextID", client.getNextId());
-                response.put("NodeType","");
+                //response.put("YourNextID", client.getNextId());
             } else if (previousIDUpdated) {
                 response.put("Update", true);
                 response.put("YourNextID", client.getCurrentId());
-                response.put("YourPreviousID", client.getPreviousId());
+                //response.put("YourPreviousID", client.getPreviousId());
             } else {
                 response.put("Update", false);
             }
