@@ -182,7 +182,7 @@ public class Client {
         System.out.println("Client");
         System.out.println("-------------------");
         System.out.println("Name: "+this.name);
-        System.out.println("First node: "+this.firstNode);
+        System.out.println("First node: "+this.NodeType);
         System.out.println("IP-Address: "+this.IPAddres);
         System.out.println("PreviousID: "+this.previousID);
         System.out.println("ID: "+this.currentID);

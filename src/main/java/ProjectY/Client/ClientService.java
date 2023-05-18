@@ -18,11 +18,12 @@ public class ClientService extends Thread {
         response.put("Sender","Client");
         boolean nextIDUpdated = client.updateNextID(name);
         boolean previousIDUpdated = client.updatePreviousID(name);
-        if(this.client.firstNode){
+        if(this.client.NodeType=="FirstNode"){
             response.put("Update",true);
             response.put("YourNextID",client.getCurrentId());
             response.put("YourPreviousID",client.getCurrentId());
-            this.client.firstNode=false;
+            response.put("NodeType","EdgeNode");
+            this.client.NodeType="EdgeNode";
         }else {
             if (nextIDUpdated) {
                 response.put("Update", true);
@@ -35,6 +36,9 @@ public class ClientService extends Thread {
             } else {
                 response.put("Update", false);
             }
+        }
+        if(client.getPreviousId()< client.getNextId() && client.getCurrentId() < client.getNextId()){
+            client.NodeType = "NormalNode";
         }
         ClientApplication.client.print();
         return response;
@@ -50,7 +54,7 @@ public class ClientService extends Thread {
         if(message.get("Sender").equals("NamingServer")){
             System.out.println("Message received from Server");
             if(message.get("Size").equals(1)){
-                this.client.firstNode=true;
+                this.client.NodeType="FirstNode";
                 this.client.setNextId(this.client.getCurrentId());
                 this.client.setPreviousId(this.client.getCurrentId());
                 System.out.println("First node in the network");
