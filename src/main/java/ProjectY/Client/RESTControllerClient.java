@@ -12,11 +12,11 @@ import java.io.IOException;
 public class RESTControllerClient {
 
     @PostMapping(path = "Discovery")
-    public void discoveryRespons(@RequestBody JSONObject response) {
+    public JSONObject discoveryRespons(@RequestBody JSONObject response) {
         ClientService clientService = new ClientService();
         System.out.println("Discovery Response received");
         System.out.println(response);
-        clientService.handleDiscovery((String) response.get("Name"));
+        return clientService.handleDiscovery((String) response.get("Name"));
     }
 
     @PutMapping(path = "Shutdown/{nodeName}/{IPAddress}")
