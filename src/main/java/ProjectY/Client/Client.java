@@ -25,7 +25,7 @@ public class Client {
     private int currentID;
     private String name;
     private String IPAddres;
-    public boolean firstNode=false;
+    public String NodeType = "FirstNode";
     private HttpModule httpModule = new HttpModule();
     private TcpModule tcpModule = new TcpModule();
     public static String ServerIP = "172.30.0.5";
@@ -52,72 +52,47 @@ public class Client {
 
     public boolean updateNextID(String name){
         int newID = Hash(name);
-        if(this.currentID == this.nextID){ //Start-up case
-            if(!firstNode) {
-                if (newID > this.currentID) {
-                    this.nextID = newID;
-                    return true;
-                } else {
-                    return false;
-                }
+        if(NodeType=="FirstNode"){
+            this.previousID=newID;
+            this.nextID=newID;
+            return true;
+        }else if (NodeType=="EdgeNode"){
+            if(newID>this.currentID){
+                this.nextID=newID;
+                return true;
             }else{
-                setNextId(newID);
-                return true;
-            }
-        }
-        if(this.currentID < this.nextID){ //Normal node
-            if ((this.currentID < newID) & (newID < this.nextID)) {
-                setNextId(newID);
-                return true;
-            } else {
-                return false;
-            }
-        }
-        if(this.currentID > this.nextID){ //Edge node
-            if(newID > this.nextID){
-                setNextId(newID);
-                    return true;
-            } else{
                 return false;
             }
         }else{
-            System.out.println("Error in updating indexes");
-            return false;
+            if(newID>this.currentID && newID<this.nextID){
+                this.nextID=newID;
+                return true;
+            }else{
+                return false;
+            }
         }
     }
     public boolean updatePreviousID(String name) {
         int newID = Hash(name);
-        if(this.currentID==this.previousID){
-            if(!firstNode) {
-                if (newID < this.currentID) {
-                    this.previousID = newID;
-                    return true;
-                } else {
-                    return false;
-                }
-            }else{
-                setPreviousId(newID);
-                return true;
-            }
-        }
-        if(this.currentID > this.previousID){
-            if ((this.previousID < newID) & (newID < this.currentID)) {
-                setPreviousId(newID);
-                return true;
-            } else {
-                return false;
-            }
-        }
-        if(this.currentID < this.previousID){
+        if(NodeType=="FirstNode"){
+            this.previousID=newID;
+            this.nextID=newID;
+            return true;
+        }else if(NodeType=="EdgeNode"){
             if(newID > this.previousID){
-                setPreviousId(newID);
+                this.previousID=newID;
                 return true;
             }else{
                 return false;
             }
-        }
-        else{
-            return false;
+        }else{
+            if(newID < currentID && newID > previousID) {
+                this.previousID = newID;
+                return true;
+            }else{
+                return false;
+            }
+
         }
     }
     public void setServerIP(String IP){this.ServerIP = IP;}
