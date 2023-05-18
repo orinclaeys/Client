@@ -30,6 +30,7 @@ public class Client {
     public static String ServerIP = "172.30.0.5";
     private Vector<FileLog> fileLogList = new Vector<>();
 
+
     public Client() {
         System.out.println("Enter name: ");
         this.name = "test";
@@ -50,20 +51,32 @@ public class Client {
 
     public boolean updateNextID(String name){
         int newID = Hash(name);
-        if(this.currentID ==this.nextID){
+        if(this.currentID == this.nextID){ //Start-up case
          if(newID>this.currentID){
              this.nextID = newID;
              return true;
          }else{
              return false;
          }
-        }else {
+        }
+        if(this.currentID < this.nextID){ //Normal node
             if ((this.currentID < newID) & (newID < this.nextID)) {
                 setNextId(newID);
                 return true;
             } else {
                 return false;
             }
+        }
+        if(this.currentID > this.nextID){ //Edge node
+            if(newID > this.nextID){
+                setNextId(newID);
+                    return true;
+            } else{
+                return false;
+            }
+        }else{
+            System.out.println("Error in updating indexes");
+            return false;
         }
     }
     public boolean updatePreviousID(String name) {
@@ -75,13 +88,25 @@ public class Client {
             }else{
                 return false;
             }
-        }else {
+        }
+        if(this.currentID > this.previousID){
             if ((this.previousID < newID) & (newID < this.currentID)) {
                 setPreviousId(newID);
                 return true;
             } else {
                 return false;
             }
+        }
+        if(this.currentID < this.previousID){
+            if(newID > this.previousID){
+                setPreviousId(newID);
+                return true;
+            }else{
+                return false;
+            }
+        }
+        else{
+            return false;
         }
     }
     public void setServerIP(String IP){this.ServerIP = IP;}
@@ -172,9 +197,9 @@ public class Client {
         System.out.println("-------------------");
         System.out.println("Name: "+this.name);
         System.out.println("IP-Address: "+this.IPAddres);
+        System.out.println("PreviousID: "+this.previousID);
         System.out.println("ID: "+this.currentID);
         System.out.println("NextID: "+this.nextID);
-        System.out.println("PreviousID: "+this.previousID);
         System.out.println("-------------------");
     }
 

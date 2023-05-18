@@ -39,6 +39,7 @@ public class ClientService extends Thread {
                 this.client.setPreviousId((Integer) message.get("YourPreviousID"));
                 this.client.setNextId((Integer) message.get("YourNextID"));
             }
+
         }
         if(message.get("Sender").equals("NamingServer")){
             System.out.println("Message received from Server");
