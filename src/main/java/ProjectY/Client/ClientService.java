@@ -29,10 +29,12 @@ public class ClientService extends Thread {
                 response.put("Update", true);
                 response.put("YourPreviousID", client.getCurrentId());
                 response.put("YourNextID", client.getNextId());
+                response.put("NodeType","");
             } else if (previousIDUpdated) {
                 response.put("Update", true);
                 response.put("YourNextID", client.getCurrentId());
                 response.put("YourPreviousID", client.getPreviousId());
+                response.put("NodeType","");
             } else {
                 response.put("Update", false);
             }
@@ -49,6 +51,9 @@ public class ClientService extends Thread {
             if(message.get("Update").equals(true)){
                 this.client.setPreviousId((Integer) message.get("YourPreviousID"));
                 this.client.setNextId((Integer) message.get("YourNextID"));
+                if(message.get("NodeType").equals("EdgeNode")){
+                    this.client.NodeType="EdgeNode";
+                }
             }
         }
         if(message.get("Sender").equals("NamingServer")){
