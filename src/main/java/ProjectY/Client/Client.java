@@ -57,7 +57,7 @@ public class Client {
             this.nextID=newID;
             return true;
         }else if (NodeType=="EdgeNodeRight"){
-            if(newID>this.currentID){
+            if(newID>this.currentID || newID<nextID){
                 this.nextID=newID;
                 return true;
             }else{
