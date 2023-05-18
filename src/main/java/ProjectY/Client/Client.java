@@ -25,6 +25,7 @@ public class Client {
     private int currentID;
     private String name;
     private String IPAddres;
+    public boolean firstNode=false;
     private HttpModule httpModule = new HttpModule();
     private TcpModule tcpModule = new TcpModule();
     public static String ServerIP = "172.30.0.5";
@@ -52,12 +53,18 @@ public class Client {
     public boolean updateNextID(String name){
         int newID = Hash(name);
         if(this.currentID == this.nextID){ //Start-up case
-         if(newID>this.currentID){
-             this.nextID = newID;
-             return true;
-         }else{
-             return false;
-         }
+            if(!firstNode) {
+                if (newID > this.currentID) {
+                    this.nextID = newID;
+                    return true;
+                } else {
+                    return false;
+                }
+            }else{
+                setNextId(newID);
+                firstNode=false;
+                return true;
+            }
         }
         if(this.currentID < this.nextID){ //Normal node
             if ((this.currentID < newID) & (newID < this.nextID)) {
@@ -82,11 +89,17 @@ public class Client {
     public boolean updatePreviousID(String name) {
         int newID = Hash(name);
         if(this.currentID==this.previousID){
-            if(newID < this.currentID){
-                this.previousID = newID;
-                return true;
+            if(!firstNode) {
+                if (newID < this.currentID) {
+                    this.previousID = newID;
+                    return true;
+                } else {
+                    return false;
+                }
             }else{
-                return false;
+                setPreviousId(newID);
+                firstNode=false;
+                return true;
             }
         }
         if(this.currentID > this.previousID){

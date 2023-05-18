@@ -44,6 +44,7 @@ public class ClientService extends Thread {
         if(message.get("Sender").equals("NamingServer")){
             System.out.println("Message received from Server");
             if(message.get("Size").equals(1)){
+                this.client.firstNode=true;
                 this.client.setNextId(this.client.getCurrentId());
                 this.client.setPreviousId(this.client.getCurrentId());
                 System.out.println("First node in the network");
