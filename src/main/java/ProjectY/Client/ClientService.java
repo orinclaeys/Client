@@ -16,12 +16,14 @@ public class ClientService extends Thread {
     public JSONObject handleDiscovery(String name) {
         JSONObject response = new JSONObject();
         response.put("Sender","Client");
-        if (client.updateNextID(name)) {
+        boolean nextIDUpdated = client.updateNextID(name);
+        boolean previousIDUpdated = client.updatePreviousID(name);
+        if (nextIDUpdated){
             response.put("Update", true);
             response.put("YourPreviousID", client.getCurrentId());
             response.put("YourNextID", client.getNextId());
         }
-        else if (client.updatePreviousID(name)) {
+        else if (previousIDUpdated){
             response.put("Update", true);
             response.put("YourNextID", client.getCurrentId());
             response.put("YourPreviousID", client.getPreviousId());

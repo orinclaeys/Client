@@ -14,7 +14,7 @@ public class RESTControllerClient {
     @PostMapping(path = "Discovery")
     public JSONObject discoveryRespons(@RequestBody JSONObject response) {
         ClientService clientService = new ClientService();
-        System.out.println("Discovery Response received");
+        System.out.println("Discovery received");
         System.out.println(response);
         return clientService.handleDiscovery((String) response.get("Name"));
     }
