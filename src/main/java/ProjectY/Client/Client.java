@@ -258,7 +258,15 @@ public class Client {
             String command = System.console().readLine();
             if(command.equals("Shutdown")){
                 shutdown();
+            }
+            if(command.equals("Discovery")){
+                Discovery();
+            }
+            if(command.equals("Kill")){
                 running=false;
+            }
+            if(command.equals("Files")){
+                verifyFiles();
             }
         }
     }
