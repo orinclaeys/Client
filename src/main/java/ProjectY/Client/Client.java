@@ -150,8 +150,6 @@ public class Client {
             }
         }
 
-
-
         // Remove the node from the naming server's map.
         System.out.println("Client: Shutdown: Notifying server");
         httpModule.sendShutdown(this.name);
@@ -248,6 +246,11 @@ public class Client {
                     }
                     for (FileLog fileLog : fileLogList) {
                         if (!fileNames.contains(fileLog)) {
+                            JSONObject message = new JSONObject();
+                            message.put("Sender","Client");
+                            message.put("Message","Replication delete file");
+                            message.put("fileLog",fileLog);
+                            httpModule.sendDeletedFile(message);
                             fileLogList.remove(fileLog);
                         }
                     }

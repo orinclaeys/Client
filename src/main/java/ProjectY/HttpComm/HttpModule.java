@@ -184,5 +184,23 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
+    public void sendDeletedFile(JSONObject message){
+        System.out.println("HttpModule: sendDeletedFile: " + message);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                //.uri(URI.create("http://"+Client.ServerIP+":8080/ProjectY/NamingServer/sendDeletedFile"))
+                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/sendDeletedFile"))
+                .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
+                .header("Content-type", "application/json")
+                .timeout(Duration.ofSeconds(1000))
+                .build();
+        System.out.println("HttpModule: sending to server...");
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    };
 }
 
