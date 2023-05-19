@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -33,10 +34,10 @@ public class Client {
     public Client() {
         System.out.println("Enter name: ");
         this.name = "test";
-        //this.name = System.console().readLine();
+        this.name = System.console().readLine();
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
-        //this.IPAddres = System.console().readLine();
+        this.IPAddres = System.console().readLine();
         this.currentID = Hash(this.name);
         this.previousID = this.currentID;
         this.nextID = this.currentID;
@@ -93,24 +94,16 @@ public class Client {
 
         }
     }
-    public void setServerIP(String IP){this.ServerIP = IP;}
     public int getPreviousId() {return previousID;}
-    public void setPreviousId(int previousId) {
-        previousID = previousId;}
+    public void setPreviousId(int previousId) {previousID = previousId;}
     public int getNextId() {return nextID;}
-    public void setNextId(int nextId) {
-        nextID = nextId;}
+    public void setNextId(int nextId) {nextID = nextId;}
     public int getCurrentId() {return currentID;}
-    public void setCurrentId(int currentId) {
-        currentID = currentId;}
-    public String getName() {return name;}
-    public void setName(String name) {this.name = name;}
     private int Hash(String name){
         double max = 2147483647;
         double min = -2147483647;
         return (int) ((name.hashCode()+max)*(32768/(max+abs(min))));
     }
-
     public void shutdown(){
         System.out.println("Client: Shutting down...");
         // Getting IP-Addresses of previous and next node
@@ -124,31 +117,31 @@ public class Client {
         httpModule.sendUpdateNextNode(ipNextNode,previousID);
 
         // Get the replicated files and update the previous node
-        Vector<String> replicatedFiles = new Vector<>();
-        Vector<String> replicatedOwnerFiles = new Vector<>();
-        String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
-        for (int i=0;fileLogList.size()<i;i++) {
-            for (int j=0;fileLogList.get(i).getReplicatedOwners().size()<j;j++) {
-                if (fileLogList.get(i).getReplicatedOwners().get(j) == this.IPAddres) {
-                    if (fileLogList.get(i).getOwner() == previousID) {
-                        JSONObject message = new JSONObject();
-                        message.put("Sender","Client");
-                        message.put("Message","Replication");
-                        message.put("IP",this.IPAddres);
-                        message.put("fileLog",fileLogList.get(i));
-                        httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));
-                    }
-                    else {
-                        JSONObject message = new JSONObject();
-                        message.put("Sender","Client");
-                        message.put("Message","Replication");
-                        message.put("IP",this.IPAddres);
-                        message.put("fileLog",fileLogList.get(i));
-                        httpModule.sendReplication(message,ipPreviousPreviousNode);
-                    }
-                }
-            }
-        }
+        //Vector<String> replicatedFiles = new Vector<>();
+        //Vector<String> replicatedOwnerFiles = new Vector<>();
+        //String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
+        //for (int i=0;fileLogList.size()<i;i++) {
+        //    for (int j=0;fileLogList.get(i).getReplicatedOwners().size()<j;j++) {
+        //        if (fileLogList.get(i).getReplicatedOwners().get(j) == this.IPAddres) {
+        //            if (fileLogList.get(i).getOwner() == previousID) {
+        //                JSONObject message = new JSONObject();
+        //                message.put("Sender","Client");
+        //                message.put("Message","Replication");
+        //                message.put("IP",this.IPAddres);
+        //                message.put("fileLog",fileLogList.get(i));
+        //                httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));
+        //            }
+        //            else {
+        //                JSONObject message = new JSONObject();
+        //                message.put("Sender","Client");
+        //                message.put("Message","Replication");
+        //                message.put("IP",this.IPAddres);
+        //                message.put("fileLog",fileLogList.get(i));
+        //                httpModule.sendReplication(message,ipPreviousPreviousNode);
+        //            }
+        //        }
+        //    }
+        //}
 
         // Remove the node from the naming server's map.
         System.out.println("Client: Shutdown: Notifying server");
@@ -244,16 +237,6 @@ public class Client {
                             }
                         }
                     }
-                    for (FileLog fileLog : fileLogList) {
-                        if (!fileNames.contains(fileLog)) {
-                            JSONObject message = new JSONObject();
-                            message.put("Sender","Client");
-                            message.put("Message","Replication delete file");
-                            message.put("fileLog",fileLog);
-                            httpModule.sendDeletedFile(message);
-                            fileLogList.remove(fileLog);
-                        }
-                    }
                 }
             }
         }, 0, 5000);
@@ -268,4 +251,31 @@ public class Client {
         return fileNamesList;
     }
 
+    public void run(){
+        boolean running=true;
+        while(running){
+            System.out.println("Enter command: ");
+            String command = System.console().readLine();
+            if(command.equals("Shutdown")){
+                shutdown();
+                running=false;
+            }
+        }
+    }
+
+    public void updateNodeType(){
+        if(nextID<currentID){
+            NodeType="EdgeNodeRight";
+        }
+        if(previousID>currentID){
+            NodeType="EdgeNodeLeft";
+        }
+        if(nextID==currentID&&previousID==currentID){
+            NodeType="FirstNode";
+        }
+        if(previousID<currentID && currentID<nextID){
+            NodeType="NormalNode";
+        }
+        print();
+    }
 }

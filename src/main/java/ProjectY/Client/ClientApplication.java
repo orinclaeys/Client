@@ -11,6 +11,7 @@ public class ClientApplication {
         SpringApplication.run(ClientApplication.class, args);
         client.initialize();
         client.print();
+        client.run();
     }
 
 }

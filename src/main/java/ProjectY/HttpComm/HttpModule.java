@@ -39,7 +39,7 @@ public class HttpModule{
             JSONObject response = mapper.readValue(Stringresponse.body(),JSONObject.class);
             System.out.println("Client: Server response: "+response.toJSONString());
             ClientService service = new ClientService();
-            service.handleDiscoveryRespons(response);
+            service.handleDiscoveryResponse(response);
             Vector<String> IPlist = new Vector<String>((ArrayList<String>) response.get("IPlist"));
             for (String ipAddr : IPlist) {
                 HttpRequest request2 = HttpRequest.newBuilder()
@@ -53,7 +53,7 @@ public class HttpModule{
                 HttpResponse<String> Stringresponse2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
                 JSONObject response2 = mapper.readValue(Stringresponse2.body(), JSONObject.class);
                 System.out.println("Client: Client response: "+response2);
-                service.handleDiscoveryRespons(response2);
+                service.handleDiscoveryResponse(response2);
             }
 
         } catch (IOException | InterruptedException e) {

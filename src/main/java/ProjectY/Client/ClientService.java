@@ -36,19 +36,10 @@ public class ClientService extends Thread {
                 response.put("Update", false);
             }
         }
-        if(client.getPreviousId()< client.getNextId() && client.getCurrentId() < client.getNextId()){
-            client.NodeType = "NormalNode";
-        }
-        if(client.getNextId()<client.getCurrentId()){
-            client.NodeType = "EdgeNodeRight";
-        }
-        if(client.getPreviousId()>client.getCurrentId()){
-            client.NodeType = "EdgeNodeLeft";
-        }
-        ClientApplication.client.print();
+        this.client.updateNodeType();
         return response;
     }
-    public void handleDiscoveryRespons(JSONObject message){
+    public void handleDiscoveryResponse(JSONObject message){
         if(message.get("Sender").equals("Client")){
             System.out.println("Message received form Client");
             if(message.get("Update").equals(true)){
@@ -69,15 +60,7 @@ public class ClientService extends Thread {
                 System.out.println("First node in the network");
             }
         }
-        if(client.getPreviousId()< client.getNextId() && client.getCurrentId() < client.getNextId()){
-            client.NodeType = "NormalNode";
-        }
-        if(client.getNextId()<client.getCurrentId()){
-            client.NodeType = "EdgeNodeRight";
-        }
-        if(client.getPreviousId()>client.getCurrentId()){
-            client.NodeType = "EdgeNodeLeft";
-        }
+        client.updateNodeType();
     }
 
     public JSONObject handleReplication(JSONObject message) {
@@ -104,7 +87,7 @@ public class ClientService extends Thread {
     }
 
     public void handleFailureResponse(JSONObject response){
-        System.out.println("Client: Handle failure repsonse");
+        System.out.println("Client: Handle failure response");
         if(response.get("nextId").equals(client.getCurrentId())){
             client.setPreviousId((int) response.get("PreviousId"));
             System.out.println("PreviousId updated on next node");

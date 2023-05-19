@@ -12,7 +12,7 @@ import java.io.IOException;
 public class RESTControllerClient {
 
     @PostMapping(path = "Discovery")
-    public JSONObject discoveryRespons(@RequestBody JSONObject response) {
+    public JSONObject discoveryResponse(@RequestBody JSONObject response) {
         ClientService clientService = new ClientService();
         System.out.println("Discovery received");
         System.out.println(response);
@@ -25,24 +25,18 @@ public class RESTControllerClient {
         ClientApplication.client.shutdown();
     }
 
-/*
-    @PutMapping(path = "Update/{nodeName}")
-    public JSONObject update(@PathVariable("nodeName") String nodeName) {
-        ClientService clientService = new ClientService(this.client);
-        return clientService.update(nodeName);
-    }
-*/
-
     @PutMapping("Update/PreviousNode/{NextId}")
     public void updatePreviousNode(@PathVariable("NextId") int NextId) {
         ClientService clientService = new ClientService();
         ClientApplication.client.setNextId(NextId);
+        ClientApplication.client.updateNodeType();
     }
 
     @PutMapping("Update/NextNode/{PreviousId}")
     public void updateNextNode(@PathVariable("Previous") int PreviousId) {
         ClientService clientService = new ClientService();
         ClientApplication.client.setPreviousId(PreviousId);
+        ClientApplication.client.updateNodeType();
     }
 
     @PutMapping(path = "Replication")
