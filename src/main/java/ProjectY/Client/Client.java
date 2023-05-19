@@ -12,10 +12,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
+import java.util.*;
+import java.util.function.Predicate;
 
 import static java.lang.Math.abs;
 
@@ -235,7 +233,10 @@ public class Client {
                 File[] files = folder.listFiles();
 
                 if (files != null) {
+                    Vector<String> fileNames = new Vector<>();
+                    Vector<String> deletedFileNames = new Vector<>();
                     for (File file : files) {
+                        fileNames.add(file.getName());
                         if (file.isFile()) {
                             if (!getFileNamesList(fileLogList).contains(file.getName())) {
                                 System.out.println("Client: New file detected: " + file.getName());
@@ -243,6 +244,10 @@ public class Client {
                                 fileLog.setOwner(currentID);
                                 fileLogList.add(fileLog);
                                 replication(fileLog, ServerIP);
+                            }
+                            for (int i=0; i < fileLogList.size();i++) {
+                                if (file.getName())
+                                deletedFileNames
                             }
                         }
                     }
