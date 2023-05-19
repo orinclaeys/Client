@@ -33,7 +33,7 @@ public class RESTControllerClient {
     }
 
     @PutMapping("Update/NextNode/{PreviousId}")
-    public void updateNextNode(@PathVariable("Previous") int PreviousId) {
+    public void updateNextNode(@PathVariable("PreviousId") int PreviousId) {
         ClientService clientService = new ClientService();
         ClientApplication.client.setPreviousId(PreviousId);
         ClientApplication.client.updateNodeType();
