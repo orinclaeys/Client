@@ -65,8 +65,8 @@ public class HttpModule{
     public String sendIPRequest(int ID){
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/getIPAddress/"+ ID))
-                //.uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/getIPAddress/"+ ID))
+                //.uri(URI.create("http://localhost:8080/ProjectY/NamingServer/getIPAddress/"+ ID))
+                .uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/getIPAddress/"+ ID))
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
