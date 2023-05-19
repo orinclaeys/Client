@@ -127,7 +127,8 @@ public class HttpModule{
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest requestDeleteNode = HttpRequest.newBuilder()
                 //.uri(URI.create("http://localhost:8080/ProjectY/NamingServer/deleteNode"+name))
-                .uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/deleteNode"+name))
+                .uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/deleteNode/"+name))
+                .DELETE()
                 .build();
         try {
             HttpResponse<String> responseDeleteNode = httpClient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());
