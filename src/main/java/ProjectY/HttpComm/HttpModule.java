@@ -103,6 +103,7 @@ public class HttpModule{
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest requestPreviousNode = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/PreviousNode/"+ nextID))
+                .PUT(HttpRequest.BodyPublishers.noBody())
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
@@ -114,6 +115,7 @@ public class HttpModule{
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest requestPreviousNode = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/NextNode/"+ previousID))
+                .PUT(HttpRequest.BodyPublishers.noBody())
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
