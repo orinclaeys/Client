@@ -234,10 +234,9 @@ public class Client {
 
                 if (files != null) {
                     Vector<String> fileNames = new Vector<>();
-                    Vector<String> deletedFileNames = new Vector<>();
                     for (File file : files) {
-                        fileNames.add(file.getName());
                         if (file.isFile()) {
+                            fileNames.add(file.getName());
                             if (!getFileNamesList(fileLogList).contains(file.getName())) {
                                 System.out.println("Client: New file detected: " + file.getName());
                                 FileLog fileLog = new FileLog(file.getName(), Hash(file.getName()));
@@ -245,10 +244,11 @@ public class Client {
                                 fileLogList.add(fileLog);
                                 replication(fileLog, ServerIP);
                             }
-                            for (int i=0; i < fileLogList.size();i++) {
-                                if (file.getName())
-                                deletedFileNames
-                            }
+                        }
+                    }
+                    for (FileLog fileLog : fileLogList) {
+                        if (!fileNames.contains(fileLog)) {
+                            fileLogList.remove(fileLog);
                         }
                     }
                 }
