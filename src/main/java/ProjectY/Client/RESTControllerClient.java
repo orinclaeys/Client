@@ -45,10 +45,15 @@ public class RESTControllerClient {
         ClientApplication.client.setPreviousId(PreviousId);
     }
 
-
     @PutMapping(path = "Replication")
     public JSONObject replication(@RequestBody JSONObject message) {
         ClientService clientService = new ClientService();
         return clientService.handleReplication(message);
+    }
+
+    @PutMapping(path = "Client/replication/sendFileInformation")
+    public void receiveFileInformation (@RequestBody JSONObject message) {
+        ClientService clientService = new ClientService();
+        clientService.handleFileInformation(message);
     }
 }

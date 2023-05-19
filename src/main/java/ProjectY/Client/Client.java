@@ -33,10 +33,10 @@ public class Client {
     public Client() {
         System.out.println("Enter name: ");
         this.name = "test";
-        this.name = System.console().readLine();
+        //this.name = System.console().readLine();
         System.out.println("Enter IP-Address: ");
         this.IPAddres = "192.168.1.2";
-        this.IPAddres = System.console().readLine();
+        //this.IPAddres = System.console().readLine();
         this.currentID = Hash(this.name);
         this.previousID = this.currentID;
         this.nextID = this.currentID;
@@ -189,7 +189,7 @@ public class Client {
     }
 
     public void verifyFiles(){
-        File directory = new File("src/main/java/ProjectY/Client/Files");
+        File directory = new File("src/main/java/ProjectY/Client/Files/local");
         File[] contentOfDirectory = directory.listFiles();
         for (File object : contentOfDirectory) {
             if (object.isFile()) {
@@ -220,7 +220,7 @@ public class Client {
 
     public void replication(FileLog fileLog, String IP) {
         fileLog.addReplicatedOwner(this.IPAddres);
-        this.tcpModule.sendReplicatedFiles(IP, fileLog.getFileName());
+        this.tcpModule.sendFile(IP,fileLog.getFileName());
     }
 
     // Check the local folder for changes at regular time intervals
@@ -229,7 +229,7 @@ public class Client {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                File folder = new File("src/main/java/ProjectY/Client/Files");
+                File folder = new File("src/main/java/ProjectY/Client/Files/local");
                 File[] files = folder.listFiles();
 
                 if (files != null) {
@@ -264,4 +264,5 @@ public class Client {
         }
         return fileNamesList;
     }
+
 }

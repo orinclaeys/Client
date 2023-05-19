@@ -166,5 +166,23 @@ public class HttpModule{
         }
     }
     public void sendReplication(JSONObject message, String IP){}
+
+    public void sendFileInformation(JSONObject message){
+        System.out.println("HttpModule: sendFileInformation");
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/ProjectY/Client/replication/sendFileInformation"))
+                    .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
+                    .header("Content-type", "application/json")
+                    .timeout(Duration.ofSeconds(1000))
+                    .build();
+        System.out.println("Httpmodule: Sending to client");
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

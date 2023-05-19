@@ -1,6 +1,7 @@
 package ProjectY.Client;
 
 import ProjectY.HttpComm.HttpModule;
+import ProjectY.HttpComm.TcpModule;
 import org.json.simple.JSONObject;
 
 import java.util.Vector;
@@ -114,6 +115,16 @@ public class ClientService extends Thread {
         }
         else
             System.out.println("Nothing updated!");
+    }
+
+    public void handleFileInformation(JSONObject message){
+        TcpModule tcpModule = new TcpModule();
+
+        System.out.println("Client: handle file information");
+        int portNumber = (int) message.get("PortNumber");
+        String filename = (String) message.get("Filename");
+
+        tcpModule.receiveFile(portNumber,filename);
     }
 
 }

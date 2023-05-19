@@ -1,5 +1,6 @@
 package ProjectY.Client;
 
+import ProjectY.HttpComm.TcpModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -39,6 +40,12 @@ class ClientApplicationTests {
 		System.out.println(fileLogList);*/
 		client.replicationUpdate();
 
+	}
+
+	@Test
+	void tcp(){
+		TcpModule tcpModule = new TcpModule();
+		tcpModule.sendFile("192.168.1.1","abc.txt");
 	}
 
 }
