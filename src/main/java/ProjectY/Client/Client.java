@@ -117,31 +117,31 @@ public class Client {
         httpModule.sendUpdateNextNode(ipNextNode,previousID);
 
         // Get the replicated files and update the previous node
-        //Vector<String> replicatedFiles = new Vector<>();
-        //Vector<String> replicatedOwnerFiles = new Vector<>();
-        //String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
-        //for (int i=0;fileLogList.size()<i;i++) {
-        //    for (int j=0;fileLogList.get(i).getReplicatedOwners().size()<j;j++) {
-        //        if (fileLogList.get(i).getReplicatedOwners().get(j) == this.IPAddres) {
-        //            if (fileLogList.get(i).getOwner() == previousID) {
-        //                JSONObject message = new JSONObject();
-        //                message.put("Sender","Client");
-        //                message.put("Message","Replication");
-        //                message.put("IP",this.IPAddres);
-        //                message.put("fileLog",fileLogList.get(i));
-        //                httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));
-        //            }
-        //            else {
-        //                JSONObject message = new JSONObject();
-        //                message.put("Sender","Client");
-        //                message.put("Message","Replication");
-        //                message.put("IP",this.IPAddres);
-        //                message.put("fileLog",fileLogList.get(i));
-        //                httpModule.sendReplication(message,ipPreviousPreviousNode);
-        //            }
-        //        }
-        //    }
-        //}
+        Vector<String> replicatedFiles = new Vector<>();
+        Vector<String> replicatedOwnerFiles = new Vector<>();
+        String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
+        for (int i=0;fileLogList.size()<i;i++) {
+            for (int j=0;fileLogList.get(i).getReplicatedOwners().size()<j;j++) {
+                if (fileLogList.get(i).getReplicatedOwners().get(j) == this.IPAddres) {
+                    if (fileLogList.get(i).getOwner() == previousID) {
+                        JSONObject message = new JSONObject();
+                        message.put("Sender","Client");
+                        message.put("Message","Replication");
+                        message.put("IP",this.IPAddres);
+                        message.put("fileLog",fileLogList.get(i));
+                        httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));
+                    }
+                    else {
+                        JSONObject message = new JSONObject();
+                        message.put("Sender","Client");
+                        message.put("Message","Replication");
+                        message.put("IP",this.IPAddres);
+                        message.put("fileLog",fileLogList.get(i));
+                        httpModule.sendReplication(message,ipPreviousPreviousNode);
+                    }
+                }
+            }
+        }
 
         // Remove the node from the naming server's map.
         System.out.println("Client: Shutdown: Notifying server");
@@ -237,10 +237,22 @@ public class Client {
                             }
                         }
                     }
+                    for (FileLog fileLog : fileLogList) {
+                        if (!fileNames.contains(fileLog)) {
+                            Vector <String> replicatedOwners = fileLog.getReplicatedOwners();
+                            for (int i=0;i < replicatedOwners.size();i++) {
+                                JSONObject message = new JSONObject();
+                                message.put("Sender", "Client");
+                                message.put("Message", "Replication delete file");
+                                message.put("fileName", fileLog.getFileName());
+                                httpModule.sendDeleteFile(message, replicatedOwners.get(i));
+                            }
+                            fileLogList.remove(fileLog);
+                        }
+                    }
                 }
             }
         }, 0, 5000);
-
     }
 
     public Vector<String> getFileNamesList(Vector<FileLog> fileLogList) {
@@ -286,4 +298,24 @@ public class Client {
         }
         print();
     }
+    public void deleteFile(String fileName){
+        String path = "src/main/java/ProjectY/Client/Files/"+fileName;
+        File file = new File(path);
+
+        if (file.exists()) {
+            try {
+                if (file.delete()) {
+                    System.out.println("Client: File deleted successfully.");
+                } else {
+                    System.out.println("Client: Failed to delete the file.");
+                }
+            } catch (SecurityException e) {
+                System.out.println("Client: Permission denied. Unable to delete the file.");
+            }
+        } else {
+            System.out.println("Client: File does not exist.");
+        }
+        fileLogList.remove(fileName);
+    }
+
 }

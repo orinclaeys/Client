@@ -48,4 +48,11 @@ class ClientApplicationTests {
 		tcpModule.sendFile("192.168.1.1","abc.txt");
 	}
 
+	@Test
+	void deleteFile(){
+		Client client = new Client();
+		client.deleteFile("abc.txt");
+
+	}
+
 }

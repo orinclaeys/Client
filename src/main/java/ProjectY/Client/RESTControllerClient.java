@@ -50,4 +50,10 @@ public class RESTControllerClient {
         ClientService clientService = new ClientService();
         clientService.handleFileInformation(message);
     }
+
+    @PostMapping(path="Client/replication/sendDeleteFile")
+    public void deleteFile(@RequestBody JSONObject message) {
+        ClientService clientService = new ClientService();
+        clientService.handleDeleteFile(message);
+    }
 }

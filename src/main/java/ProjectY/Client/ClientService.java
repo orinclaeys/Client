@@ -110,4 +110,12 @@ public class ClientService extends Thread {
         tcpModule.receiveFile(portNumber,filename);
     }
 
+    public void handleDeleteFile(JSONObject message) {
+        if (message.get("Sender").equals("Client")) {
+            if (message.get("Message").equals("Replication delete file")) {
+                String fileName = (String) message.get("fileName");
+                client.deleteFile(fileName);
+            }
+        }
+    }
 }
