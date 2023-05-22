@@ -18,24 +18,25 @@ public class TcpModule {
     public TcpModule() {
     }
 
-    public void sendFile(String ipPreviousNode, String filename){
+    public void sendFile(String destinationIP, String filename){
         try {
-            System.out.println("TCP: " + ipPreviousNode + " Filename: " + filename);
+            System.out.println("TCP: " + destinationIP + " Filename: " + filename);
 
             HttpModule httpModule = new HttpModule();
-            int portNumber = 5000;
+            int portNumber = 5005;
             JSONObject message = new JSONObject();
+            message.put("DestinationAddress",destinationIP);
             message.put("PortNumber",portNumber);
             message.put("Filename", filename);
             httpModule.sendFileInformation(message);
 
-            //Socket socket = new Socket(ipPreviousNode,portNumber);
+            //Socket socket = new Socket(destinationIP,portNumber);
             Socket socket = new Socket("localhost",portNumber);
             System.out.println("CLIENT: connected to server. Sending file...");
 
             OutputStream outputStream = socket.getOutputStream();
 
-            FileInputStream fileInputStream = new FileInputStream("src/main/java/ProjectY/Client/Files/local/" + filename);
+            FileInputStream fileInputStream = new FileInputStream("src/main/java/ProjectY/Client/Files/" + filename);
 
             byte[] buffer = new byte[1024];
             int bytesRead;
@@ -49,6 +50,8 @@ public class TcpModule {
             outputStream.close();
             socket.close();
 
+
+
         }catch (Exception e){
             System.out.println(e.toString());
         }
@@ -59,7 +62,7 @@ public class TcpModule {
         try {
             ServerSocket serverSocket = new ServerSocket(portNumber);
 
-            System.out.println("SERVER: Listening in port " + portNumber);
+            System.out.println("SERVER: Listening on port " + portNumber);
 
             while (true){
                 Socket clientSocket = serverSocket.accept();

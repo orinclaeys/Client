@@ -103,12 +103,16 @@ public class ClientService extends Thread {
     public void handleFileInformation(JSONObject message){
         TcpModule tcpModule = new TcpModule();
 
-        System.out.println("Client: handle file information");
-        int portNumber = (int) message.get("PortNumber");
-        String filename = (String) message.get("Filename");
+        if(message.get("DestinationAddress").equals(client.getIPAddres())) {
+            System.out.println("Client: handle file information");
+            int portNumber = (int) message.get("PortNumber");
+            String filename = (String) message.get("Filename");
 
-        tcpModule.receiveFile(portNumber,filename);
+            tcpModule.receiveFile(portNumber, filename);
+        }
     }
+
+
 
     public void handleDeleteFile(JSONObject message) {
         if (message.get("Sender").equals("Client")) {

@@ -9,6 +9,7 @@ public class FileLog {
         private String fileName;
         private int fileID;
         private int owner;
+        private String ownerIP;
         private Vector<String> replicatedOwners = new Vector<>();
         private Vector<String> downloadLocations = new Vector<>();
 
@@ -30,7 +31,15 @@ public class FileLog {
             return fileName;
         }
 
-        public void updateReplicatedOwner(String oldReplicatedOwner, String newReplicatedOwner) {
+        public void setOwnerIP(String ownerIP) {
+            this.ownerIP = ownerIP;
+        }
+
+    public String getOwnerIP() {
+        return ownerIP;
+    }
+
+    public void updateReplicatedOwner(String oldReplicatedOwner, String newReplicatedOwner) {
             replicatedOwners.remove(oldReplicatedOwner);
             addReplicatedOwner(newReplicatedOwner);
         }
@@ -39,6 +48,7 @@ public class FileLog {
             response.put("fileName",fileName);
             response.put("fileID",fileID);
             response.put("owner",owner);
+            response.put("ownerIP",ownerIP);
             JSONArray replicatedOwnerJSON = new JSONArray();
             replicatedOwnerJSON.addAll(replicatedOwners);
             response.put("replicatedOwners",replicatedOwnerJSON);
@@ -57,6 +67,7 @@ public class FileLog {
                 "fileName='" + fileName + '\'' +
                 ", fileID=" + fileID +
                 ", owner=" + owner +
+                ", ownerIP=" + ownerIP +
                 ", replicatedOwners=" + replicatedOwners +
                 ", downloadLocations=" + downloadLocations +
                 '}';

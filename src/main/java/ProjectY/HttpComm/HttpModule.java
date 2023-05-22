@@ -168,7 +168,6 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
-    public void sendReplication(JSONObject message, String IP){}
 
     public void sendFileInformation(JSONObject message){
         System.out.println("HttpModule: sendFileInformation");

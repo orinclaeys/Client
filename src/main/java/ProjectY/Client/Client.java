@@ -124,22 +124,36 @@ public class Client {
             for (int j=0;fileLogList.get(i).getReplicatedOwners().size()<j;j++) {
                 if (fileLogList.get(i).getReplicatedOwners().get(j) == this.IPAddres) {
                     if (fileLogList.get(i).getOwner() == previousID) {
-                        JSONObject message = new JSONObject();
+/*                        JSONObject message = new JSONObject();
                         message.put("Sender","Client");
                         message.put("Message","Replication");
                         message.put("IP",this.IPAddres);
                         message.put("fileLog",fileLogList.get(i));
-                        httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));
+                        //httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));*/
+                        tcpModule.sendFile(fileLogList.get(i).getReplicatedOwners().get(j), fileLogList.get(i).getFileName());
+                        fileLogList.get(i).updateReplicatedOwner(this.IPAddres,ipPreviousNode);
+                        //fileLogList.get(i).
                     }
                     else {
-                        JSONObject message = new JSONObject();
+/*                        JSONObject message = new JSONObject();
                         message.put("Sender","Client");
                         message.put("Message","Replication");
                         message.put("IP",this.IPAddres);
                         message.put("fileLog",fileLogList.get(i));
-                        httpModule.sendReplication(message,ipPreviousPreviousNode);
+                        //httpModule.sendReplication(message,ipPreviousPreviousNode);*/
+                        tcpModule.sendFile(ipPreviousPreviousNode, fileLogList.get(i).getFileName());
+                        fileLogList.get(i).updateReplicatedOwner(this.IPAddres,ipPreviousPreviousNode);
                     }
                 }
+            }
+            if (fileLogList.get(i).getOwnerIP() == this.IPAddres) {
+                if (!fileLogList.get(i).getReplicatedOwners().isEmpty()) {
+                    fileLogList.get(i).setOwner(previousID);
+                    fileLogList.get(i).setOwnerIP(ipPreviousNode);
+                }
+                //else {
+                //deleteFile(fileLogList.get(i).getFileName());
+                //}
             }
         }
 
@@ -155,6 +169,8 @@ public class Client {
         message.put("Failed node name",nodeName);
         httpModule.sendFailure(message);
     }
+
+    // MOET NOG GEBEUREN: NIEUWE NODE -> CHECK OF REPLICATED FILES MOETEN VERPLAATST WORDEN
     public void Discovery(){
         System.out.println("Client: Discovery...");
         JSONObject message = new JSONObject();
@@ -187,6 +203,7 @@ public class Client {
                 System.out.println("Verify file name: " + object.getName());
                 FileLog fileLog = new FileLog(object.getName(), Hash(object.getName()));
                 fileLog.setOwner(this.currentID);
+                fileLog.setOwnerIP(this.IPAddres);
                 fileLogList.add(fileLog);
                 System.out.println(fileLogList);
             }
@@ -203,6 +220,7 @@ public class Client {
             message.put("fileName", fileLog.getFileName());
             message.put("fileID",fileLog.getFileID());
             message.put("owner",fileLog.getOwner());
+            message.put("ownerIP",fileLog.getOwnerIP());
             message.put("replicatedOwners",replicatedOwners);
             message.put("downloadLocations",downloadLocations);
             httpModule.sendReplication(message);
@@ -232,6 +250,7 @@ public class Client {
                                 System.out.println("Client: New file detected: " + file.getName());
                                 FileLog fileLog = new FileLog(file.getName(), Hash(file.getName()));
                                 fileLog.setOwner(currentID);
+                                fileLog.setOwnerIP(IPAddres);
                                 fileLogList.add(fileLog);
                                 replication(fileLog, ServerIP);
                             }
@@ -318,4 +337,8 @@ public class Client {
         fileLogList.remove(fileName);
     }
 
+
+    public String getIPAddres() {
+        return IPAddres;
+    }
 }

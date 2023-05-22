@@ -45,7 +45,8 @@ class ClientApplicationTests {
 	@Test
 	void tcp(){
 		TcpModule tcpModule = new TcpModule();
-		tcpModule.sendFile("192.168.1.1","abc.txt");
+		tcpModule.sendFile("localhost","abc.txt");
+		//tcpModule.receiveFile(5006,"sentThisFile.txt");
 	}
 
 	@Test
