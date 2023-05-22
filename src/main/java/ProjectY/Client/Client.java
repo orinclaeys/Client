@@ -121,11 +121,11 @@ public class Client {
         for (FileLog fileLog : fileLogList) {
             if (fileLog.getReplicatedOwner() == this.IPAddres) {
                 if (fileLog.getOwner() == previousID) {
-                    tcpModule.sendFile(ipPreviousPreviousNode, fileLog.getFileName());
+                    tcpModule.sendFile(fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
                     fileLog.setReplicatedOwner(ipPreviousPreviousNode);
                 }
                 else {
-                    tcpModule.sendFile(ipPreviousNode, fileLog.getFileName());
+                    tcpModule.sendFile(fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
                     fileLog.setReplicatedOwner(ipPreviousNode);
                 }
             }
@@ -169,7 +169,7 @@ public class Client {
     public void askReplicationFiles(String newNode, String newNodeIP) {
         for(FileLog fileLog : fileLogList){
            if(currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()){
-               tcpModule.sendFile(newNodeIP, fileLog.getFileName());
+               tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
                deleteFile(fileLog.getFileName());
            }
         }
@@ -213,7 +213,7 @@ public class Client {
 
     public void replication(FileLog fileLog, String IP) {
         fileLog.setReplicatedOwner(this.IPAddres);
-        this.tcpModule.sendFile(IP,fileLog.getFileName());
+        this.tcpModule.sendFile(fileLog.getOwnerIP(), IP,fileLog.getFileName());
     }
 
     // Check the local folder for changes at regular time intervals
@@ -241,9 +241,14 @@ public class Client {
                         }
                     }
                     for (FileLog fileLog : fileLogList) {
-                        if (!fileNames.contains(fileLog)) {
-                            httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
-                            fileLogList.remove(fileLog);
+                        if (!fileNames.contains(fileLog.getFileName())) {
+                            if(fileLog.getOwnerIP() == IPAddres) {
+                                httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
+                                fileLogList.remove(fileLog);
+                            }
+                            else {
+                                tcpModule.sendFile(fileLog.getOwnerIP(), fileLog.getReplicatedOwner(), fileLog.getFileName());
+                            }
                         }
                     }
                 }

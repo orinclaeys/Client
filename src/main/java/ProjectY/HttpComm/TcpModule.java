@@ -1,5 +1,6 @@
 package ProjectY.HttpComm;
 
+import ProjectY.Client.ClientApplication;
 import ProjectY.Client.FileLog;
 import org.json.simple.JSONObject;
 
@@ -18,20 +19,20 @@ public class TcpModule {
     public TcpModule() {
     }
 
-    public void sendFile(String destinationIP, String filename){
+    public void sendFile(String ownerIP,String ReplicatorIP, String filename){
         try {
-            System.out.println("TCP: " + destinationIP + " Filename: " + filename);
+            System.out.println("TCP: " + ownerIP + " Filename: " + filename);
 
             HttpModule httpModule = new HttpModule();
             int portNumber = 5005;
             JSONObject message = new JSONObject();
-            message.put("DestinationAddress",destinationIP);
+            message.put("DestinationAddress",ReplicatorIP);
             message.put("PortNumber",portNumber);
             message.put("Filename", filename);
-            httpModule.sendFileInformation(message);
+            httpModule.sendFileInformation(ownerIP,message);
 
             //Socket socket = new Socket(destinationIP,portNumber);
-            Socket socket = new Socket("localhost",portNumber);
+            Socket socket = new Socket(ClientApplication.client.getIPAddres(), portNumber);
             System.out.println("CLIENT: connected to server. Sending file...");
 
             OutputStream outputStream = socket.getOutputStream();

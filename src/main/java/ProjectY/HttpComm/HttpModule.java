@@ -182,12 +182,12 @@ public class HttpModule{
         }
     }
 
-    public void sendFileInformation(JSONObject message){
+    public void sendFileInformation(String IP, JSONObject message){
         System.out.println("HttpModule: sendFileInformation");
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/ProjectY/Client/replication/sendFileInformation"))
+                    .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/sendFileInformation"))
                     .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
                     .header("Content-type", "application/json")
                     .timeout(Duration.ofSeconds(1000))
