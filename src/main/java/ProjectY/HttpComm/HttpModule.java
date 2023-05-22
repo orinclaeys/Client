@@ -62,6 +62,17 @@ public class HttpModule{
 
 
     }
+    public void askReplicationFiles(String DestinationIP){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+DestinationIP+":8081/ProjectY/Client/Discovery/askReplicationFiles/"+node.getName()+"/"+node.getIPAddres()))
+                .build();
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public String sendIPRequest(int ID){
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -150,20 +161,22 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
-    public void sendReplication(JSONObject message){
+    public JSONObject sendReplication(JSONObject message){
         System.out.println("HttpModule: sendReplication: " + message);
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 //.uri(URI.create("http://"+Client.ServerIP+":8080/ProjectY/NamingServer/replication"))
-                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/replication"))
+                .uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/replication"))
                 .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
                 .header("Content-type", "application/json")
                 .timeout(Duration.ofSeconds(1000))
                 .build();
         System.out.println("HttpModule: sending to server...");
         try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> stringResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(stringResponse.body(), JSONObject.class);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -186,14 +199,13 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
-    public void sendDeleteFile(JSONObject message, String ip){
-        System.out.println("HttpModule: sendDeleteFile: " + message);
+    public void sendDeleteFile(String ip, String fileName){
+        System.out.println("HttpModule: sendDeleteFile: " + fileName);
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+ip+":8080/ProjectY/Client/replication/deleteFile"))
-                .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
-                .header("Content-type", "application/json")
+                .uri(URI.create("http://"+ip+":8081/ProjectY/Client/replication/deleteFile/"+fileName))
+                .DELETE()
                 .timeout(Duration.ofSeconds(1000))
                 .build();
         System.out.println("HttpModule: sending to "+ip+"...");

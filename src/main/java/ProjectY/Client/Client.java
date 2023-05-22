@@ -117,43 +117,26 @@ public class Client {
         httpModule.sendUpdateNextNode(ipNextNode,previousID);
 
         // Get the replicated files and update the previous node
-        Vector<String> replicatedFiles = new Vector<>();
-        Vector<String> replicatedOwnerFiles = new Vector<>();
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
-        for (int i=0;fileLogList.size()<i;i++) {
-            for (int j=0;fileLogList.get(i).getReplicatedOwners().size()<j;j++) {
-                if (fileLogList.get(i).getReplicatedOwners().get(j) == this.IPAddres) {
-                    if (fileLogList.get(i).getOwner() == previousID) {
-/*                        JSONObject message = new JSONObject();
-                        message.put("Sender","Client");
-                        message.put("Message","Replication");
-                        message.put("IP",this.IPAddres);
-                        message.put("fileLog",fileLogList.get(i));
-                        //httpModule.sendReplication(message,fileLogList.get(i).getReplicatedOwners().get(j));*/
-                        tcpModule.sendFile(fileLogList.get(i).getReplicatedOwners().get(j), fileLogList.get(i).getFileName());
-                        fileLogList.get(i).updateReplicatedOwner(this.IPAddres,ipPreviousNode);
-                        //fileLogList.get(i).
-                    }
-                    else {
-/*                        JSONObject message = new JSONObject();
-                        message.put("Sender","Client");
-                        message.put("Message","Replication");
-                        message.put("IP",this.IPAddres);
-                        message.put("fileLog",fileLogList.get(i));
-                        //httpModule.sendReplication(message,ipPreviousPreviousNode);*/
-                        tcpModule.sendFile(ipPreviousPreviousNode, fileLogList.get(i).getFileName());
-                        fileLogList.get(i).updateReplicatedOwner(this.IPAddres,ipPreviousPreviousNode);
-                    }
+        for (FileLog fileLog : fileLogList) {
+            if (fileLog.getReplicatedOwner() == this.IPAddres) {
+                if (fileLog.getOwner() == previousID) {
+                    tcpModule.sendFile(ipPreviousPreviousNode, fileLog.getFileName());
+                    fileLog.setReplicatedOwner(ipPreviousPreviousNode);
+                }
+                else {
+                    tcpModule.sendFile(ipPreviousNode, fileLog.getFileName());
+                    fileLog.setReplicatedOwner(ipPreviousNode);
                 }
             }
-            if (fileLogList.get(i).getOwnerIP() == this.IPAddres) {
-                if (!fileLogList.get(i).getReplicatedOwners().isEmpty()) {
-                    fileLogList.get(i).setOwner(previousID);
-                    fileLogList.get(i).setOwnerIP(ipPreviousNode);
+            if (fileLog.getOwnerIP() == this.IPAddres) {
+                if (fileLog.getReplicatedOwner().isEmpty()) {
+                    deleteFile(fileLog.getFileName());
+                    fileLogList.remove(fileLog);
                 }
-                //else {
-                //deleteFile(fileLogList.get(i).getFileName());
-                //}
+                else {
+                    httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
+                }
             }
         }
 
@@ -170,7 +153,6 @@ public class Client {
         httpModule.sendFailure(message);
     }
 
-    // MOET NOG GEBEUREN: NIEUWE NODE -> CHECK OF REPLICATED FILES MOETEN VERPLAATST WORDEN
     public void Discovery(){
         System.out.println("Client: Discovery...");
         JSONObject message = new JSONObject();
@@ -179,9 +161,19 @@ public class Client {
         message.put("Name",this.name);
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
-
+        this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
     }
 
+    public String getName() {return name;}
+
+    public void askReplicationFiles(String newNode, String newNodeIP) {
+        for(FileLog fileLog : fileLogList){
+           if(currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()){
+               tcpModule.sendFile(newNodeIP, fileLog.getFileName());
+               deleteFile(fileLog.getFileName());
+           }
+        }
+    }
     public void print(){
         System.out.println(" ");
         System.out.println("Client");
@@ -210,25 +202,17 @@ public class Client {
         }
         for (FileLog fileLog : fileLogList) {
             JSONObject message = new JSONObject();
-            JSONArray replicatedOwners = new JSONArray();
-            JSONArray downloadLocations = new JSONArray();
-            replicatedOwners.addAll(fileLog.getReplicatedOwners());
-            downloadLocations.addAll(fileLog.getDownloadLocations());
 
             message.put("Sender", "Client");
             message.put("Message", "Replication");
-            message.put("fileName", fileLog.getFileName());
             message.put("fileID",fileLog.getFileID());
-            message.put("owner",fileLog.getOwner());
-            message.put("ownerIP",fileLog.getOwnerIP());
-            message.put("replicatedOwners",replicatedOwners);
-            message.put("downloadLocations",downloadLocations);
-            httpModule.sendReplication(message);
+            JSONObject response = httpModule.sendReplication(message);
+            replication(fileLog, (String) response.get("ReplicatedOwnerIP"));
         }
     }
 
     public void replication(FileLog fileLog, String IP) {
-        fileLog.addReplicatedOwner(this.IPAddres);
+        fileLog.setReplicatedOwner(this.IPAddres);
         this.tcpModule.sendFile(IP,fileLog.getFileName());
     }
 
@@ -238,7 +222,7 @@ public class Client {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                File folder = new File("src/main/java/ProjectY/Client/Files/local");
+                File folder = new File("src/main/java/ProjectY/Client/Files");
                 File[] files = folder.listFiles();
 
                 if (files != null) {
@@ -258,14 +242,7 @@ public class Client {
                     }
                     for (FileLog fileLog : fileLogList) {
                         if (!fileNames.contains(fileLog)) {
-                            Vector <String> replicatedOwners = fileLog.getReplicatedOwners();
-                            for (int i=0;i < replicatedOwners.size();i++) {
-                                JSONObject message = new JSONObject();
-                                message.put("Sender", "Client");
-                                message.put("Message", "Replication delete file");
-                                message.put("fileName", fileLog.getFileName());
-                                httpModule.sendDeleteFile(message, replicatedOwners.get(i));
-                            }
+                            httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                             fileLogList.remove(fileLog);
                         }
                     }

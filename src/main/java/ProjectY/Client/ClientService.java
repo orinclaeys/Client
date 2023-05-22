@@ -37,6 +37,7 @@ public class ClientService extends Thread {
             }
         }
         this.client.updateNodeType();
+
         return response;
     }
     public void handleDiscoveryResponse(JSONObject message){
@@ -65,22 +66,10 @@ public class ClientService extends Thread {
 
     public JSONObject handleReplication(JSONObject message) {
         JSONObject response = new JSONObject();
-        if (message.get("Sender").equals("NamingServer")){
-            if (message.get("Message").equals("Replication")){
-                FileLog fileLog;
-                fileLog = (FileLog) message.get("FileLog");
-                client.replication(fileLog,(String) message.get("IP"));
-
-                response.put("Sender", "Client");
-                response.put("Message", "Replication Response");
-                response.put("FileLog", fileLog);
-            }
-        }
         if (message.get("Sender").equals("Client")){
             if (message.get("Message").equals("Replication")){
                 FileLog fileLog = (FileLog) message.get("Filelog");
                 client.replication(fileLog,(String) message.get("IP"));
-
             }
         }
         return response;
@@ -112,14 +101,7 @@ public class ClientService extends Thread {
         }
     }
 
-
-
-    public void handleDeleteFile(JSONObject message) {
-        if (message.get("Sender").equals("Client")) {
-            if (message.get("Message").equals("Replication delete file")) {
-                String fileName = (String) message.get("fileName");
-                client.deleteFile(fileName);
-            }
-        }
+    public void handleDeleteFile(String fileName) {
+        client.deleteFile(fileName);
     }
 }

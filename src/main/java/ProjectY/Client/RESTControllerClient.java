@@ -51,9 +51,13 @@ public class RESTControllerClient {
         clientService.handleFileInformation(message);
     }
 
-    @PostMapping(path="Client/replication/sendDeleteFile")
-    public void deleteFile(@RequestBody JSONObject message) {
+    @DeleteMapping(path="Client/replication/sendDeleteFile/{fileName}")
+    public void deleteFile(@PathVariable("fileName") String fileName) {
         ClientService clientService = new ClientService();
-        clientService.handleDeleteFile(message);
+        clientService.handleDeleteFile(fileName);
+    }
+    @GetMapping(path="Client/Discovery/askReplicationFiles/{newNode}/{newNodeIP}")
+    public void askReplicationFiles(@PathVariable("newNode") String newNode,@PathVariable("newNodeIP") String newNodeIP){
+        ClientApplication.client.askReplicationFiles(newNode,newNodeIP);
     }
 }
