@@ -160,9 +160,8 @@ public class Client {
         message.put("Name",this.name);
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
-        if(NodeType!="FirstNode") {
-            this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
-        }
+        this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
+
     }
 
     public String getName() {return name;}
