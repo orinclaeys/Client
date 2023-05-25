@@ -12,6 +12,7 @@ class ClientApplicationTests {
 	@Test
 	void replication() {
 		Client client1 = new Client();
+		client1.verifyFiles();
 
 	}
 

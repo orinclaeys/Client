@@ -41,8 +41,6 @@ public class Client {
         this.currentID = Hash(this.name);
         this.previousID = this.currentID;
         this.nextID = this.currentID;
-        //Discovery();
-        //verifyFiles();
     }
 
     public void initialize(){
