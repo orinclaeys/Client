@@ -160,7 +160,9 @@ public class Client {
         message.put("Name",this.name);
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
-        //this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
+        if(NodeType!="FirstNode") {
+            this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
+        }
     }
 
     public String getName() {return name;}
@@ -189,7 +191,7 @@ public class Client {
     public void verifyFiles(){
         File directory = new File("src/main/java/ProjectY/Client/Files");
         File[] contentOfDirectory = directory.listFiles();
-        for (File object : contentOfDirectory) {
+        for (File object : contentOfDirectory) {  //Put files in fileLogList
             if (object.isFile()) {
                 System.out.println("Verify file name: " + object.getName());
                 FileLog fileLog = new FileLog(object.getName(), Hash(object.getName()));
@@ -199,7 +201,7 @@ public class Client {
                 System.out.println(fileLogList);
             }
         }
-        for (FileLog fileLog : fileLogList) {
+        for (FileLog fileLog : fileLogList) {     //send filesID's to server
             JSONObject message = new JSONObject();
 
             message.put("Sender", "Client");
@@ -208,8 +210,6 @@ public class Client {
             JSONObject response = httpModule.sendReplication(message);
             replication(fileLog, (String) response.get("ReplicatedOwnerIP"));
         }
-
-        this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
     }
 
     public void replication(FileLog fileLog, String IP) {
