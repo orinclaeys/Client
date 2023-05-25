@@ -22,7 +22,7 @@ public class TcpModule {
     public void sendFile(String ownerIP,String ReplicatorIP, String filename){
         if (ReplicatorIP!=null) {
             try {
-                System.out.println("TCP: " + ownerIP + " Filename: " + filename);
+                System.out.println("TCP: " + ownerIP + " Filename: " + filename + "to "+ReplicatorIP);
 
                 HttpModule httpModule = new HttpModule();
                 int portNumber = 5005;

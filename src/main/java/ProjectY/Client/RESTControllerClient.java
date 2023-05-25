@@ -45,7 +45,7 @@ public class RESTControllerClient {
         return clientService.handleReplication(message);
     }
 
-    @PutMapping(path = "Client/replication/sendFileInformation")
+    @PostMapping(path = "Client/replication/sendFileInformation")
     public void receiveFileInformation (@RequestBody JSONObject message) {
         ClientService clientService = new ClientService();
         clientService.handleFileInformation(message);
