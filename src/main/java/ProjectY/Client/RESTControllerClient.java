@@ -58,6 +58,7 @@ public class RESTControllerClient {
     }
     @GetMapping(path="Client/Discovery/askReplicationFiles/{newNode}/{newNodeIP}")
     public void askReplicationFiles(@PathVariable("newNode") String newNode,@PathVariable("newNodeIP") String newNodeIP){
+        System.out.println("New node asking for replication files...");
         ClientApplication.client.askReplicationFiles(newNode,newNodeIP);
     }
 }

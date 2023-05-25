@@ -161,17 +161,17 @@ public class Client {
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
         this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
-
     }
 
     public String getName() {return name;}
 
     public void askReplicationFiles(String newNode, String newNodeIP) {
         for(FileLog fileLog : fileLogList){
-           if(currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()){
-               tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
-               deleteFile(fileLog.getFileName());
-           }
+            if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
+                tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
+                deleteFile(fileLog.getFileName());
+            }
+
         }
     }
     public void print(){

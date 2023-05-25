@@ -63,13 +63,13 @@ public class HttpModule{
 
     }
     public void askReplicationFiles(String DestinationIP, String nodeName, String nodeIP){
+        System.out.println("HttpModule: askReplication to " + DestinationIP);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+DestinationIP+":8081/ProjectY/Client/Discovery/askReplicationFiles/"+nodeName+"/"+nodeIP))
                 .build();
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HttpModule: askReplication to " + DestinationIP);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
