@@ -6,6 +6,7 @@ import ProjectY.Client.ClientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -15,6 +16,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.List;
 
 public class HttpModule{
     private final Client node = ClientApplication.client;
@@ -214,6 +216,19 @@ public class HttpModule{
         System.out.println("HttpModule: sending to "+ip+"...");
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public List<String> getFileList(String IPAddress){
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/SyncAgent"))
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return (List<String>) response;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

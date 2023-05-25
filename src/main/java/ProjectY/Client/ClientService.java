@@ -2,6 +2,7 @@ package ProjectY.Client;
 
 import ProjectY.HttpComm.HttpModule;
 import ProjectY.HttpComm.TcpModule;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.Vector;
@@ -103,5 +104,13 @@ public class ClientService extends Thread {
 
     public void handleDeleteFile(String fileName) {
         client.deleteFile(fileName);
+    }
+
+    public JSONObject handleSync(){
+        JSONObject response = new JSONObject();
+        JSONArray fileArray = new JSONArray();
+        fileArray = (JSONArray) client.syncAgent.getFileList();
+        response.put("List", fileArray);
+        return response;
     }
 }

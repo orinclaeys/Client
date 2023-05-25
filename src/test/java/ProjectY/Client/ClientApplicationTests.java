@@ -4,6 +4,9 @@ import ProjectY.HttpComm.TcpModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 @SpringBootTest
@@ -47,5 +50,13 @@ class ClientApplicationTests {
 		client.deleteFile("abc.txt");
 
 	}
+
+//	@Test
+//	void test(){
+//		SyncAgent syncAgent = new SyncAgent();
+//		Vector<String> fileListNew;
+//		syncAgent.updateList(9, fileListNew);
+//
+//	}
 
 }

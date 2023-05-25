@@ -29,6 +29,7 @@ public class Client {
     private TcpModule tcpModule = new TcpModule();
     public static String ServerIP = "172.30.0.5";
     private Vector<FileLog> fileLogList = new Vector<>();
+    public SyncAgent syncAgent = new SyncAgent();
 
 
     public Client() {
@@ -328,5 +329,14 @@ public class Client {
 
     public String getIPAddres() {
         return IPAddres;
+    }
+
+    public Vector<String> getOwnerFileNamesList(Vector<FileLog> fileLogList) {
+        Vector <String> fileNamesList = new Vector<>();
+        for (int i=0; i < fileLogList.size(); i++){
+            if (fileLogList.get(i).getOwner() == currentID)
+                fileNamesList.add(fileLogList.get(i).getFileName());
+        }
+        return fileNamesList;
     }
 }

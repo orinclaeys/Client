@@ -61,4 +61,10 @@ public class RESTControllerClient {
         System.out.println("New node asking for replication files...");
         ClientApplication.client.askReplicationFiles(newNode,newNodeIP);
     }
+
+    @GetMapping(path = "Client/SyncAgent")
+    public JSONObject sendSync(){
+        ClientService clientService = new ClientService();
+        return clientService.handleSync();
+    }
 }
