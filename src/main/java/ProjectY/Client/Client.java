@@ -47,6 +47,7 @@ public class Client {
 
     public void initialize(){
         Discovery();
+        verifyFiles();
     }
 
     public boolean updateNextID(String name){
@@ -161,7 +162,7 @@ public class Client {
         message.put("Name",this.name);
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
-        this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
+        //this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
     }
 
     public String getName() {return name;}
@@ -209,6 +210,8 @@ public class Client {
             JSONObject response = httpModule.sendReplication(message);
             replication(fileLog, (String) response.get("ReplicatedOwnerIP"));
         }
+
+        this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
     }
 
     public void replication(FileLog fileLog, String IP) {
