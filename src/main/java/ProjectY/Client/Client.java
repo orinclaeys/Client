@@ -161,7 +161,7 @@ public class Client {
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
         if(NodeType!="FirstNode") {
-            this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID));
+            this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
         }
     }
 

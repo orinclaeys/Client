@@ -62,10 +62,10 @@ public class HttpModule{
 
 
     }
-    public void askReplicationFiles(String DestinationIP){
+    public void askReplicationFiles(String DestinationIP, String nodeName, String nodeIP){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+DestinationIP+":8081/ProjectY/Client/Discovery/askReplicationFiles/"+node.getName()+"/"+node.getIPAddres()))
+                .uri(URI.create("http://"+DestinationIP+":8081/ProjectY/Client/Discovery/askReplicationFiles/"+nodeName+"/"+nodeIP))
                 .build();
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
