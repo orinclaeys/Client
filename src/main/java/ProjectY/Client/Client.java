@@ -189,7 +189,7 @@ public class Client {
     }
 
     public void verifyFiles(){
-        File directory = new File("src/main/java/ProjectY/Client/Files/local");
+        File directory = new File("src/main/java/ProjectY/Client/Files");
         File[] contentOfDirectory = directory.listFiles();
         for (File object : contentOfDirectory) {
             if (object.isFile()) {
