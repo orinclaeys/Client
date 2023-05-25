@@ -176,7 +176,9 @@ public class HttpModule{
         try {
             HttpResponse<String> stringResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(stringResponse.body(), JSONObject.class);
+            JSONObject response =  mapper.readValue(stringResponse.body(), JSONObject.class);
+            System.out.println("HttpModule: sendReplication response: "+ response);
+            return response;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
