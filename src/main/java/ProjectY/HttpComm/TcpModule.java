@@ -30,7 +30,7 @@ public class TcpModule {
                 message.put("DestinationAddress", ReplicatorIP);
                 message.put("PortNumber", portNumber);
                 message.put("Filename", filename);
-                httpModule.sendFileInformation(ownerIP, message);
+                httpModule.sendFileInformation(ReplicatorIP, message);
 
                 //Socket socket = new Socket(destinationIP,portNumber);
                 Socket socket = new Socket(ClientApplication.client.getIPAddres(), portNumber);
