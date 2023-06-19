@@ -73,7 +73,7 @@ public class TcpModule implements Runnable{
 
                 InputStream inputStream = clientSocket.getInputStream();
 
-                FileOutputStream fileOutputStream = new FileOutputStream("src/main/java/ProjectY/Client/Files/replicas/" + Filename);
+                FileOutputStream fileOutputStream = new FileOutputStream("src/main/java/ProjectY/Client/Files/" + Filename);
 
                 byte[] buffer = new byte[1024];
                 int bytesRead;
