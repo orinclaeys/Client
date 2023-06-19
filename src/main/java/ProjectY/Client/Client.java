@@ -336,6 +336,7 @@ public class Client {
         FileLog fileLog = new FileLog(fileName,Hash(fileName));
         fileLog.setOwnerIP(ownerIP);
         fileLog.setOwner(ownerID);
+        fileLog.setReplicatedOwner(IPAddres);
         fileLogList.add(fileLog);
     }
 
