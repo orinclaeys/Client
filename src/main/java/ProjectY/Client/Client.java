@@ -219,8 +219,10 @@ public class Client {
     }
 
     public void replication(FileLog fileLog, String IP) {
-        fileLog.setReplicatedOwner(this.IPAddres);
-        this.tcpModule.sendFile(fileLog.getOwnerIP(), IP,fileLog.getFileName());
+        if(IP!=null) {
+            fileLog.setReplicatedOwner(this.IPAddres);
+            this.tcpModule.sendFile(fileLog.getOwnerIP(), IP, fileLog.getFileName());
+        }
     }
 
     // Check the local folder for changes at regular time intervals
