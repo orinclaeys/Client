@@ -215,7 +215,9 @@ public class Client {
             replication(fileLog, (String) response.get("ReplicatedOwnerIP"));
             fileLog.setReplicatedOwner((String) response.get("ReplicatedOwnerIP"));
         }
-        this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
+        if(this.NodeType!="FirstNode") {
+            this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID), name, IPAddres);
+        }
     }
 
     public void replication(FileLog fileLog, String IP) {
