@@ -46,7 +46,7 @@ public class Client {
 
     public void initialize(){
         Discovery();
-        verifyFiles();
+        //verifyFiles();
     }
 
     public boolean updateNextID(String name){
