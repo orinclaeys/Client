@@ -97,6 +97,9 @@ public class ClientService extends Thread {
             System.out.println("Client: handle file information");
             int portNumber = (int) message.get("PortNumber");
             String filename = (String) message.get("Filename");
+            String ownerIP = (String) message.get("ownerIP");
+            int ownerID = (Integer) message.get("ownerID");
+            ClientApplication.client.addReplicatedFile(filename,ownerIP,ownerID);
             tcpModule.portnumber = portNumber;
             tcpModule.Filename = filename;
             Thread thread = new Thread(tcpModule);

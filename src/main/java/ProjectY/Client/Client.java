@@ -330,9 +330,10 @@ public class Client {
         }
         fileLogList.remove(fileName);
     }
-    public void addReplicatedFile(String fileName, String ownerIP){
+    public void addReplicatedFile(String fileName, String ownerIP, int ownerID){
         FileLog fileLog = new FileLog(fileName,Hash(fileName));
         fileLog.setOwnerIP(ownerIP);
+        fileLog.setOwner(ownerID);
         fileLogList.add(fileLog);
     }
 
