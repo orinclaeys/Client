@@ -216,7 +216,7 @@ public class Client {
             message.put("fileID",fileLog.getFileID());
             JSONObject response = httpModule.sendReplication(message);
             String replicatedOwnerIP = (String) response.get("ReplicatedOwnerIP");
-            if(replicatedOwnerIP!=IPAddres) {
+            if(!Objects.equals(replicatedOwnerIP, IPAddres)) {
                 replication(fileLog, replicatedOwnerIP);
                 fileLog.setReplicatedOwner(replicatedOwnerIP);
             }
