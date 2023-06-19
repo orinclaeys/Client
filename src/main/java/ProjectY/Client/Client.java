@@ -329,9 +329,7 @@ public class Client {
     }
 
 
-    public String getIPAddres() {
-        return IPAddres;
-    }
+    public String getIPAddres() {return IPAddres;}
 
     public Vector<String> getOwnerFileNamesList(Vector<FileLog> fileLogList) {
         Vector <String> fileNamesList = new Vector<>();

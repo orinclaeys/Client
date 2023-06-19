@@ -200,6 +200,7 @@ public class HttpModule{
         System.out.println("Httpmodule: Sending to client");
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Httpmodule: fileInformation send to client");
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

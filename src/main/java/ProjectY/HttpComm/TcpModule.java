@@ -33,7 +33,7 @@ public class TcpModule {
                 httpModule.sendFileInformation(ReplicatorIP, message);
 
                 //Socket socket = new Socket(destinationIP,portNumber);
-                Socket socket = new Socket(ClientApplication.client.getIPAddres(), portNumber);
+                Socket socket = new Socket(ReplicatorIP, portNumber);
                 System.out.println("CLIENT: connected to server. Sending file...");
 
                 OutputStream outputStream = socket.getOutputStream();
