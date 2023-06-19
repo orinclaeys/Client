@@ -20,7 +20,7 @@ public class TcpModule implements Runnable{
 
     public TcpModule() {}
 
-    public void sendFile(String ownerIP,String ReplicatorIP, String filename){
+    public void sendFile(int ownerID, String ownerIP,String ReplicatorIP, String filename){
         if (ReplicatorIP!=null) {
             try {
                 System.out.println("TCP: " + ownerIP + " Filename: " + filename + " to "+ReplicatorIP);
@@ -28,6 +28,8 @@ public class TcpModule implements Runnable{
                 HttpModule httpModule = new HttpModule();
                 int portNumber = 5005;
                 JSONObject message = new JSONObject();
+                message.put("ownerID",ownerID);
+                message.put("ownerIP",ownerIP);
                 message.put("DestinationAddress", ReplicatorIP);
                 message.put("PortNumber", portNumber);
                 message.put("Filename", filename);

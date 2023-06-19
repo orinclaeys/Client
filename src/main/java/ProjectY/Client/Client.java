@@ -121,11 +121,11 @@ public class Client {
         for (FileLog fileLog : fileLogList) {
             if (fileLog.getReplicatedOwner() == this.IPAddres) {
                 if (fileLog.getOwner() == previousID) {
-                    tcpModule.sendFile(fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
+                    tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
                     fileLog.setReplicatedOwner(ipPreviousPreviousNode);
                 }
                 else {
-                    tcpModule.sendFile(fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
+                    tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
                     fileLog.setReplicatedOwner(ipPreviousNode);
                 }
             }
@@ -169,10 +169,10 @@ public class Client {
     public void askReplicationFiles(String newNode, String newNodeIP) {
         for(FileLog fileLog : fileLogList){
             if(fileLog.getOwnerIP().equals(IPAddres)) {
-                tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
+                tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
             }else{
                 if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
-                    tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
+                    tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
                     deleteFile(fileLog.getFileName());
                 }
             }
@@ -220,7 +220,7 @@ public class Client {
     public void replication(FileLog fileLog, String IP) {
         if(IP!=null) {
             fileLog.setReplicatedOwner(this.IPAddres);
-            this.tcpModule.sendFile(fileLog.getOwnerIP(), IP, fileLog.getFileName());
+            this.tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), IP, fileLog.getFileName());
         }
     }
 
@@ -255,7 +255,7 @@ public class Client {
                                 fileLogList.remove(fileLog);
                             }
                             else {
-                                tcpModule.sendFile(fileLog.getOwnerIP(), fileLog.getReplicatedOwner(), fileLog.getFileName());
+                                tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), fileLog.getReplicatedOwner(), fileLog.getFileName());
                             }
                         }
                     }
@@ -288,6 +288,9 @@ public class Client {
             }
             if(command.equals("Files")){
                 verifyFiles();
+            }
+            if(command.equals("List")){
+                System.out.println(fileLogList);
             }
         }
     }
@@ -325,6 +328,11 @@ public class Client {
             System.out.println("Client: File does not exist.");
         }
         fileLogList.remove(fileName);
+    }
+    public void addReplicatedFile(String fileName, String ownerIP){
+        FileLog fileLog = new FileLog(fileName,Hash(fileName));
+        fileLog.setOwnerIP(ownerIP);
+        fileLogList.add(fileLog);
     }
 
 
