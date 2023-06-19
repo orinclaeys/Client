@@ -168,7 +168,9 @@ public class Client {
 
     public void askReplicationFiles(String newNode, String newNodeIP) {
         for(FileLog fileLog : fileLogList){
-            if(fileLog.getOwnerIP().equals(IPAddres)){
+            if(fileLog.getOwnerIP().equals(IPAddres)) {
+                tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
+            }else{
                 if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
                     tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
                     deleteFile(fileLog.getFileName());
