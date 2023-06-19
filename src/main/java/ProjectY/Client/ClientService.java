@@ -97,8 +97,10 @@ public class ClientService extends Thread {
             System.out.println("Client: handle file information");
             int portNumber = (int) message.get("PortNumber");
             String filename = (String) message.get("Filename");
-
-            tcpModule.receiveFile(portNumber, filename);
+            tcpModule.portnumber = portNumber;
+            tcpModule.Filename = filename;
+            Thread thread = new Thread(tcpModule);
+            thread.start();
         }
     }
 

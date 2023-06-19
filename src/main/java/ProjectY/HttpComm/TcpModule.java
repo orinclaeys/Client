@@ -9,15 +9,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
-public class TcpModule {
+public class TcpModule implements Runnable{
     private static DataInputStream dataInputStream = null;
     private static DataOutputStream dataOutputStream = null;
     public void replicateFile(FileLog fileLog) {
         System.out.println("Replicate file");
     }
+    public int portnumber;
+    public String Filename;
 
-    public TcpModule() {
-    }
+    public TcpModule() {}
 
     public void sendFile(String ownerIP,String ReplicatorIP, String filename){
         if (ReplicatorIP!=null) {
@@ -59,11 +60,11 @@ public class TcpModule {
         }
    }
 
-   public void receiveFile(int portNumber, String filename){
+   public void run(){
         try {
-            ServerSocket serverSocket = new ServerSocket(portNumber);
+            ServerSocket serverSocket = new ServerSocket(portnumber);
 
-            System.out.println("SERVER: Listening on port " + portNumber);
+            System.out.println("SERVER: Listening on port " + portnumber);
 
             while (true){
                 Socket clientSocket = serverSocket.accept();
@@ -72,7 +73,7 @@ public class TcpModule {
 
                 InputStream inputStream = clientSocket.getInputStream();
 
-                FileOutputStream fileOutputStream = new FileOutputStream("src/main/java/ProjectY/Client/Files/replicas/" + filename);
+                FileOutputStream fileOutputStream = new FileOutputStream("src/main/java/ProjectY/Client/Files/replicas/" + Filename);
 
                 byte[] buffer = new byte[1024];
                 int bytesRead;
