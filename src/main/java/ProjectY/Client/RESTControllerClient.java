@@ -60,6 +60,7 @@ public class RESTControllerClient {
     public void askReplicationFiles(@PathVariable("newNode") String newNode,@PathVariable("newNodeIP") String newNodeIP){
         System.out.println("New node asking for replication files...");
         ClientApplication.client.askReplicationFiles(newNode,newNodeIP);
+        System.out.println("Handled replication request");
     }
 
     @GetMapping(path = "Client/SyncAgent")
