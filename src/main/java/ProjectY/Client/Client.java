@@ -213,6 +213,7 @@ public class Client {
             message.put("fileID",fileLog.getFileID());
             JSONObject response = httpModule.sendReplication(message);
             replication(fileLog, (String) response.get("ReplicatedOwnerIP"));
+            fileLog.setReplicatedOwner((String) response.get("ReplicatedOwnerIP"));
         }
         this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
     }
