@@ -215,8 +215,11 @@ public class Client {
             message.put("Message", "Replication");
             message.put("fileID",fileLog.getFileID());
             JSONObject response = httpModule.sendReplication(message);
-            replication(fileLog, (String) response.get("ReplicatedOwnerIP"));
-            fileLog.setReplicatedOwner((String) response.get("ReplicatedOwnerIP"));
+            String replicatedOwnerIP = (String) response.get("ReplicatedOwnerIP");
+            if(replicatedOwnerIP!=IPAddres) {
+                replication(fileLog, replicatedOwnerIP);
+                fileLog.setReplicatedOwner(replicatedOwnerIP);
+            }
         }
         if(this.NodeType!="FirstNode") {
             this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID), name, IPAddres);
