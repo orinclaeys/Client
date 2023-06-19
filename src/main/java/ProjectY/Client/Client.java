@@ -161,7 +161,7 @@ public class Client {
         message.put("Name",this.name);
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
-        //this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
+
     }
 
     public String getName() {return name;}
@@ -169,10 +169,6 @@ public class Client {
     public void askReplicationFiles(String newNode, String newNodeIP) {
         for(FileLog fileLog : fileLogList){
             if(fileLog.getOwnerIP().equals(IPAddres)){
-                if(Hash(newNode) < fileLog.getFileID()){
-                    tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
-                }
-            }else {
                 if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
                     tcpModule.sendFile(fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
                     deleteFile(fileLog.getFileName());
@@ -216,6 +212,7 @@ public class Client {
             JSONObject response = httpModule.sendReplication(message);
             replication(fileLog, (String) response.get("ReplicatedOwnerIP"));
         }
+        this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID),name,IPAddres);
     }
 
     public void replication(FileLog fileLog, String IP) {
