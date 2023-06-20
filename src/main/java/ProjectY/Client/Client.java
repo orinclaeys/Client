@@ -179,7 +179,6 @@ public class Client {
 
                 }
                 if(fileLog.getReplicatedOwner()==null){
-                    httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                     fileLog.setReplicatedOwner(newNodeIP);
                     tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
                 }
