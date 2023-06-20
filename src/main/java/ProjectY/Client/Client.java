@@ -277,19 +277,17 @@ public class Client {
                             }
                         }
                     }
-                    /*for (FileLog fileLog : fileLogList) {
-                        if (!fileNames.contains(fileLog.getFileName())) {
-                            if(fileLog.getOwnerIP().equals(IPAddres)) {
-                                httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
-                                fileLogList.remove(fileLog);
+                    for (int i=0;i< fileLogList.size();i++) {
+                        if (!fileNames.contains(fileLogList.get(i).getFileName())) {
+                            if(fileLogList.get(i).getOwnerIP().equals(IPAddres)) {
+                                httpModule.sendDeleteFile(fileLogList.get(i).getReplicatedOwner(), fileLogList.get(i).getFileName());
+                                fileLogList.remove(fileLogList.get(i));
                             }
                             else {
-                                tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), fileLog.getReplicatedOwner(), fileLog.getFileName());
+                                tcpModule.sendFile(fileLogList.get(i).getOwner(),fileLogList.get(i).getOwnerIP(), fileLogList.get(i).getReplicatedOwner(), fileLogList.get(i).getFileName());
                             }
                         }
                     }
-                    */
-
                 }
             }
         }, 0, 5000);
