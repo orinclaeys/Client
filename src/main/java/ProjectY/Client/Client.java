@@ -187,6 +187,11 @@ public class Client {
         for(String fileName: deletedFiles){
             deleteFile(fileName);
             System.out.println("Deleting "+fileName);
+            for(FileLog fileLog: fileLogList){
+                if(fileName.equals(fileLog.getFileName())){
+                    fileLogList.remove(fileLog);
+                }
+            }
         }
     }
     public void print(){
@@ -342,11 +347,6 @@ public class Client {
             }
         } else {
             System.out.println("Client: File does not exist.");
-        }
-        for(FileLog fileLog: fileLogList){
-            if(fileName.equals(fileLog.getFileName())){
-                fileLogList.remove(fileLog);
-            }
         }
         System.out.println("File "+fileName+" deleted.");
     }
