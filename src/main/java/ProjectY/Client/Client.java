@@ -187,9 +187,9 @@ public class Client {
         for(String fileName: deletedFiles){
             deleteFile(fileName);
             System.out.println("Deleting "+fileName);
-            for(FileLog fileLog: fileLogList){
-                if(fileName.equals(fileLog.getFileName())){
-                    fileLogList.remove(fileLog);
+            for(int i=0;i<fileLogList.size();i++){
+                if(fileName.equals(fileLogList.get(i).getFileName())){
+                    fileLogList.remove(fileLogList.get(i));
                 }
             }
         }
