@@ -175,7 +175,7 @@ public class Client {
                 }
             }else{
                 if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
-                    tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
+                    httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), newNodeIP);
                     deleteFile(fileLog.getFileName());
                 }
             }
@@ -349,6 +349,14 @@ public class Client {
         fileLog.setOwner(ownerID);
         fileLog.setReplicatedOwner(IPAddres);
         fileLogList.add(fileLog);
+    }
+    public void updateReplicatedIP(String fileName,String ReplicationIP){
+        for(FileLog fileLog: fileLogList){
+            if(fileName.equals(fileLog.getFileName())){
+                fileLog.setReplicatedOwner(ReplicationIP);
+                tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), fileLog.getReplicatedOwner(),fileLog.getFileName());
+            }
+        }
     }
 
 

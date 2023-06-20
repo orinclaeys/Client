@@ -68,4 +68,10 @@ public class RESTControllerClient {
         ClientService clientService = new ClientService();
         return clientService.handleSync();
     }
+    @PutMapping(path="Client/replication/update/{fileName}/{replicationIP}")
+    public void updateReplicationIP(@PathVariable("fileName") String fileName,@PathVariable("replicationIP") String replicationIP){
+        System.out.println("Updating fileInformation");
+        ClientApplication.client.updateReplicatedIP(fileName,replicationIP);
+        System.out.println("fileInformation updated");
+    }
 }
