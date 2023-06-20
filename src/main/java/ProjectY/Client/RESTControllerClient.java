@@ -75,4 +75,10 @@ public class RESTControllerClient {
         ClientApplication.client.updateReplicatedIP(fileName,replicationIP);
         System.out.println("fileInformation updated");
     }
+    @GetMapping(path="Client/replication/sendFile/{fileName}")
+    public void sendFile(@PathVariable("fileName") String fileName){
+        System.out.println("Sending file "+fileName);
+        ClientApplication.client.getFile(fileName);
+        System.out.println("File send");
+    }
 }

@@ -284,7 +284,7 @@ public class Client {
                                 fileLogList.remove(fileLogList.get(i));
                             }
                             else {
-                                tcpModule.sendFile(fileLogList.get(i).getOwner(),fileLogList.get(i).getOwnerIP(), fileLogList.get(i).getReplicatedOwner(), fileLogList.get(i).getFileName());
+                                httpModule.getFile(fileLogList.get(i).getOwnerIP(),fileLogList.get(i).getFileName());
                             }
                         }
                     }
@@ -376,6 +376,13 @@ public class Client {
             if(fileName.equals(fileLog.getFileName())){
                 fileLog.setReplicatedOwner(ReplicationIP);
                 tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), fileLog.getReplicatedOwner(),fileLog.getFileName());
+            }
+        }
+    }
+    public void getFile(String fileName){
+        for(FileLog fileLog: fileLogList){
+            if(fileLog.getFileName().equals(fileName)){
+                tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(),fileLog.getReplicatedOwner(),fileLog.getFileName());
             }
         }
     }
