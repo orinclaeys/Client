@@ -167,6 +167,7 @@ public class Client {
     public String getName() {return name;}
 
     public void askReplicationFiles(String newNode, String newNodeIP) {
+        System.out.println(fileLogList);
         for(FileLog fileLog : fileLogList){
             System.out.println(fileLog.getFileName());
             if(fileLog.getOwnerIP().equals(IPAddres)) {
