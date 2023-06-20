@@ -229,7 +229,7 @@ public class HttpModule{
                 .DELETE()
                 .timeout(Duration.ofSeconds(1000))
                 .build();
-        System.out.println("HttpModule: sending to "+ip+"...");
+        System.out.println("HttpModule: sending to "+ip);
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {

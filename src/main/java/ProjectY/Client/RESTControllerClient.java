@@ -54,6 +54,7 @@ public class RESTControllerClient {
     @DeleteMapping(path="Client/replication/sendDeleteFile/{fileName}")
     public void deleteFile(@PathVariable("fileName") String fileName) {
         ClientService clientService = new ClientService();
+        System.out.println("Delete "+fileName);
         clientService.handleDeleteFile(fileName);
     }
     @GetMapping(path="Client/Discovery/askReplicationFiles/{newNode}/{newNodeIP}")
