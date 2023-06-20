@@ -277,7 +277,7 @@ public class Client {
                             }
                         }
                     }
-                    for (FileLog fileLog : fileLogList) {
+                    /*for (FileLog fileLog : fileLogList) {
                         if (!fileNames.contains(fileLog.getFileName())) {
                             if(fileLog.getOwnerIP().equals(IPAddres)) {
                                 httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
@@ -288,6 +288,8 @@ public class Client {
                             }
                         }
                     }
+                    */
+
                 }
             }
         }, 0, 5000);
