@@ -168,6 +168,7 @@ public class Client {
 
     public void askReplicationFiles(String newNode, String newNodeIP) {
         System.out.println(fileLogList);
+        Vector<String> deletedFiles = new Vector<>();
         for(FileLog fileLog : fileLogList){
             System.out.println(fileLog.getFileName());
             if(fileLog.getOwnerIP().equals(IPAddres)) {
@@ -178,10 +179,14 @@ public class Client {
             }else{
                 if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
                     httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), newNodeIP);
-                    deleteFile(fileLog.getFileName());
+                    deletedFiles.add(fileLog.getFileName());
                 }
             }
 
+        }
+        for(String fileName: deletedFiles){
+            deleteFile(fileName);
+            System.out.println("Deleting "+fileName);
         }
     }
     public void print(){
