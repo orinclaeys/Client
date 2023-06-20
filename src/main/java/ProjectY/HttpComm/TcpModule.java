@@ -64,12 +64,12 @@ public class TcpModule implements Runnable{
 
    public void run(){
         try {
-            boolean end = false;
+
             ServerSocket serverSocket = new ServerSocket(portnumber);
 
             System.out.println("SERVER: Listening on port " + portnumber);
 
-            while (!end){
+            while (true){
                 Socket clientSocket = serverSocket.accept();
 
                 System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
@@ -89,7 +89,7 @@ public class TcpModule implements Runnable{
                 fileOutputStream.close();
                 inputStream.close();
                 serverSocket.close();
-                end=true;
+
             }
         } catch (Exception e) {
             System.out.println(e.toString());
