@@ -225,9 +225,8 @@ public class HttpModule{
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+ip+":8081/ProjectY/Client/replication/deleteFile/"+fileName))
+                .uri(URI.create("http://"+ip+":8081/ProjectY/Client/replication/sendDeleteFile/"+fileName))
                 .DELETE()
-                .timeout(Duration.ofSeconds(1000))
                 .build();
         System.out.println("HttpModule: sending to "+ip);
         try {
