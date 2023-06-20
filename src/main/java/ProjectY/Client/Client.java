@@ -231,7 +231,6 @@ public class Client {
             String replicatedOwnerIP = (String) response.get("ReplicatedOwnerIP");
             if(!Objects.equals(replicatedOwnerIP, IPAddres)) {
                 replication(fileLog, replicatedOwnerIP);
-                fileLog.setReplicatedOwner(replicatedOwnerIP);
             }
         }
         if(this.NodeType!="FirstNode") {         //ask from previousnode which files to replicate
@@ -241,7 +240,7 @@ public class Client {
 
     public void replication(FileLog fileLog, String IP) {
         if(IP!=null) {
-            fileLog.setReplicatedOwner(this.IPAddres);
+            fileLog.setReplicatedOwner(IP);
             this.tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), IP, fileLog.getFileName());
         }
     }
@@ -266,7 +265,15 @@ public class Client {
                                 fileLog.setOwner(currentID);
                                 fileLog.setOwnerIP(IPAddres);
                                 fileLogList.add(fileLog);
-                                replication(fileLog, ServerIP);
+                                JSONObject message = new JSONObject();
+                                message.put("Sender", "Client");
+                                message.put("Message", "Replication");
+                                message.put("fileID",fileLog.getFileID());
+                                JSONObject response = httpModule.sendReplication(message);
+                                String replicatedOwnerIP = (String) response.get("ReplicatedOwnerIP");
+                                if(!Objects.equals(replicatedOwnerIP, IPAddres)) {
+                                    replication(fileLog, replicatedOwnerIP);
+                                }
                             }
                         }
                     }
