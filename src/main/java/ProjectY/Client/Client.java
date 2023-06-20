@@ -366,11 +366,19 @@ public class Client {
         System.out.println("File "+fileName+" deleted.");
     }
     public void addReplicatedFile(String fileName, String ownerIP, int ownerID){
-        FileLog fileLog = new FileLog(fileName,Hash(fileName));
-        fileLog.setOwnerIP(ownerIP);
-        fileLog.setOwner(ownerID);
-        fileLog.setReplicatedOwner(IPAddres);
-        fileLogList.add(fileLog);
+        boolean present=false;
+        for(FileLog fileLog: fileLogList){
+            if(fileLog.getFileName().equals(fileName)){
+                present=true;
+            }
+        }
+        if(!present) {
+            FileLog fileLog = new FileLog(fileName, Hash(fileName));
+            fileLog.setOwnerIP(ownerIP);
+            fileLog.setOwner(ownerID);
+            fileLog.setReplicatedOwner(IPAddres);
+            fileLogList.add(fileLog);
+        }
     }
     public void updateReplicatedIP(String fileName,String ReplicationIP){
         for(FileLog fileLog: fileLogList){
