@@ -221,7 +221,7 @@ public class Client {
                 fileLog.setReplicatedOwner(replicatedOwnerIP);
             }
         }
-        if(this.NodeType!="FirstNode") {
+        if(this.NodeType!="FirstNode") {         //ask from previousnode which files to replicate
             this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID), name, IPAddres);
         }
     }
@@ -336,7 +336,12 @@ public class Client {
         } else {
             System.out.println("Client: File does not exist.");
         }
-        fileLogList.remove(fileName);
+        for(FileLog fileLog: fileLogList){
+            if(fileName.equals(fileLog.getFileName())){
+                fileLogList.remove(fileLog);
+            }
+        }
+        System.out.println("File "+fileName+" deleted.");
     }
     public void addReplicatedFile(String fileName, String ownerIP, int ownerID){
         FileLog fileLog = new FileLog(fileName,Hash(fileName));
