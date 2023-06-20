@@ -173,10 +173,13 @@ public class Client {
             System.out.println(fileLog.getFileName());
             if(fileLog.getOwnerIP().equals(IPAddres)) {
                 if(Hash(newNode)<fileLog.getFileID()) {
+                    httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                     fileLog.setReplicatedOwner(newNodeIP);
                     tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
+
                 }
                 if(fileLog.getReplicatedOwner()==null){
+                    httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                     fileLog.setReplicatedOwner(newNodeIP);
                     tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
                 }
@@ -191,11 +194,6 @@ public class Client {
         for(String fileName: deletedFiles){
             deleteFile(fileName);
             System.out.println("Deleting "+fileName);
-            for(int i=0;i<fileLogList.size();i++){
-                if(fileName.equals(fileLogList.get(i).getFileName())){
-                    fileLogList.remove(fileLogList.get(i));
-                }
-            }
         }
     }
     public void print(){
@@ -351,6 +349,11 @@ public class Client {
             }
         } else {
             System.out.println("Client: File does not exist.");
+        }
+        for(int i=0;i<fileLogList.size();i++){
+            if(fileName.equals(fileLogList.get(i).getFileName())){
+                fileLogList.remove(fileLogList.get(i));
+            }
         }
         System.out.println("File "+fileName+" deleted.");
     }
