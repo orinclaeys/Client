@@ -285,6 +285,11 @@ public class Client {
                             }
                             else {
                                 httpModule.getFile(fileLogList.get(i).getOwnerIP(),fileLogList.get(i).getFileName());
+                                try {
+                                    Thread.sleep(5000);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
                         }
                     }
