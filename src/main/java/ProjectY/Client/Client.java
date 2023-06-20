@@ -176,6 +176,10 @@ public class Client {
                     fileLog.setReplicatedOwner(newNodeIP);
                     tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
                 }
+                if(fileLog.getReplicatedOwner()==null){
+                    fileLog.setReplicatedOwner(newNodeIP);
+                    tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), newNodeIP, fileLog.getFileName());
+                }
             }else{
                 if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
                     httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), newNodeIP);
