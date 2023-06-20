@@ -168,6 +168,7 @@ public class Client {
 
     public void askReplicationFiles(String newNode, String newNodeIP) {
         for(FileLog fileLog : fileLogList){
+            System.out.println(fileLog.getFileName());
             if(fileLog.getOwnerIP().equals(IPAddres)) {
                 if(Hash(newNode)<fileLog.getFileID()) {
                     fileLog.setReplicatedOwner(newNodeIP);
