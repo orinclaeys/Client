@@ -272,7 +272,7 @@ public class Client {
                     }
                     for (FileLog fileLog : fileLogList) {
                         if (!fileNames.contains(fileLog.getFileName())) {
-                            if(fileLog.getOwnerIP() == IPAddres) {
+                            if(fileLog.getOwnerIP().equals(IPAddres)) {
                                 httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                                 fileLogList.remove(fileLog);
                             }
@@ -310,6 +310,7 @@ public class Client {
             }
             if(command.equals("Files")){
                 verifyFiles();
+                replicationUpdate();
             }
             if(command.equals("List")){
                 System.out.println(fileLogList);
