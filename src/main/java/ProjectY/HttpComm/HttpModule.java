@@ -155,7 +155,7 @@ public class HttpModule{
     public String sendPreviousIPRequest(int previousID) {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/getPreviousIPAddress/"+ previousID))
+                .uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/getPreviousIPAddress/"+ previousID))
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());

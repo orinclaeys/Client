@@ -119,7 +119,7 @@ public class Client {
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
         for (FileLog fileLog : fileLogList) {
-            if (fileLog.getReplicatedOwner() == this.IPAddres) {
+            if (fileLog.getReplicatedOwner().equals(this.IPAddres)) {
                 if (fileLog.getOwner() == previousID) {
                     tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
                     fileLog.setReplicatedOwner(ipPreviousPreviousNode);
@@ -129,7 +129,7 @@ public class Client {
                     fileLog.setReplicatedOwner(ipPreviousNode);
                 }
             }
-            if (fileLog.getOwnerIP() == this.IPAddres) {
+            if (fileLog.getOwnerIP().equals(this.IPAddres)) {
                 if (fileLog.getReplicatedOwner().isEmpty()) {
                     deleteFile(fileLog.getFileName());
                     fileLogList.remove(fileLog);
