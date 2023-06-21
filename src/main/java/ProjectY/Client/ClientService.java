@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,7 +25,6 @@ public class ClientService extends Thread {
      * DISCOVERY
      * ---------
      */
-
     /**
      * Handles discovery: Auto-discover the Naming server and existing nodes in the network
      * Starting each node, initializing local parameters (previous, nextnode), and updating
@@ -59,7 +59,6 @@ public class ClientService extends Thread {
 
         return response;
     }
-
     /**
      * Handles discovery response: Auto-discover the Naming server and existing nodes in the network
      * A node that sent multicast message receives response from Naming server:
@@ -128,7 +127,6 @@ public class ClientService extends Thread {
         else
             System.out.println("Nothing updated!");
     }
-
     public void handleFileInformation(JSONObject message){
         TcpModule tcpModule = new TcpModule();
 
@@ -156,15 +154,6 @@ public class ClientService extends Thread {
         return response;
     }
 
-
-    public JSONObject handleSyncListRequest() {
-        JSONObject response = new JSONObject();
-        System.out.println("Sending list: "+client.getSyncList());
-        response.put("Keys", client.getSyncList().keySet().toArray());
-        response.put("Values",client.getSyncList().values().toArray());
-        return response;
-    }
-
     /**
      * ----------
      * SYNC AGENT
@@ -174,6 +163,13 @@ public class ClientService extends Thread {
         JSONObject response = new JSONObject();
         String jsonStr = JSONValue.toJSONString(client.getOwnerList());
         response.put("OwnerList", jsonStr);
+        return response;
+    }
+    public JSONObject handleSyncListRequest() {
+        JSONObject response = new JSONObject();
+        System.out.println("Sending list: "+client.getSyncList());
+        response.put("Keys", client.getSyncList().keySet().toArray());
+        response.put("Values",client.getSyncList().values().toArray());
         return response;
     }
 
@@ -188,14 +184,25 @@ public class ClientService extends Thread {
         response.put("FailureFileNameList", failureFileNameList);
         return response;
     }
-
     public void handleNewOwner(String fileName){
         client.setNewOwner(fileName);
     }
-
     public void handleFailureAgent(JSONObject message){
         int currentID = (int) message.get("CurrentID");
         int failingID  = (int) message.get("FailingID");
         ClientApplication.client.startFailureAgent(currentID,failingID);
+    }
+
+    public void handleUpdateReplicationIP(String fileName, String replicationIP){
+        client.updateReplicatedIP(fileName,replicationIP);
+    }
+    public void handleSendFile(String fileName) {
+        client.getFile(fileName);
+    }
+    public void handleResetFile(String fileName) {
+        client.updateReplicatedIP(fileName,null);
+    }
+    public void handleAskReplicationFiles(String newNode, String newNodeIP){
+        client.askReplicationFiles(newNode,newNodeIP);
     }
 }

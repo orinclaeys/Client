@@ -11,66 +11,62 @@ import java.util.*;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Sync agents has to make sure that all available files in the network are at the right place,
+ * checking every node and all the files this node owns.
+ */
+
 public class SyncAgent implements Runnable, Serializable {
-    private Map<String, Boolean> oldList = new HashMap<>();
-    private Map<String, Boolean> newList = new HashMap<>();
-    private Map<String, Boolean> syncList = new HashMap<>();
     private HttpModule httpModule = new HttpModule();
+    private Map<String, Boolean> newList = new HashMap<>();
+    private Map<String, Boolean> oldList = new HashMap<>();
+    private Map<String, Boolean> syncList = new HashMap<>();
 
     @Override
     public void run() {
-        //Timer timer = new Timer();
-        //timer.schedule(new TimerTask() {
-            //@Override
-            //public void run()
-            while(true) {
-                // Listing all files owned by the node at which this agent runs
-                // The new list is equal to the list of the nodes that the current node owns
-                //newList = httpModule.sendOwnerListRequest(IP);
-                newList = ClientApplication.client.getOwnerList();
+        while(true) {
+            // The new list is equal to the list of the nodes that the node owns
+            newList = ClientApplication.client.getOwnerList();
 
-                // Get the IP of the next node
-                //String nextIP = httpModule.sendPreviousIPRequest(ID);
-                String nextIP = httpModule.sendIPRequest(ClientApplication.client.getNextId());
-                // The list is equal to the sync list of the next node
-                syncList = httpModule.sendSyncListRequest(nextIP);
+            // Get the IP of the next node
+            String nextIP = httpModule.sendIPRequest(ClientApplication.client.getNextId());
 
-                // The new list does not contain the old file name -> remove the file name from the list
-                for (String fileName : oldList.keySet()) {
-                    if (!newList.containsKey(fileName)) {
-                        syncList.remove(fileName);
-                    }
-                }
+            // The list is equal to the sync list of the next node
+            syncList = httpModule.sendSyncListRequest(nextIP);
 
-                // If one of the owned files is not added to the list, the list needs to be updated
-                // The old list does not contain the new file name -> add the file name to the list
-                for (String fileName : newList.keySet()) {
-                    if (!oldList.containsKey(fileName)) {
-                        syncList.put(fileName, newList.get(fileName));
-                    }
-
-                    // Update the lock value
-                    // If there is a lock request on the current node, and the file is not locked on the agent’s list,
-                    // locking should be enabled on the node and the list should be synchronized accordingly
-                    // Remove the lock when it is not needed anymore, and update local file list accordingly
-                    // true = locked
-                    // false = unlocked
-                    syncList.replace(fileName, newList.get(fileName));
-                }
-
-                // The new list becomes the old list
-                oldList = new HashMap<>(newList);
-
-                // Update the list stored by the node based on the agent’s list
-                ClientApplication.client.setSyncList(syncList);
-                //}
-                // }, 0, 5000);
-                try {
-                    sleep(10000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+            for (String fileName : oldList.keySet()) {
+                // Check if the new list doest not contain the file name from the old list
+                if (!newList.containsKey(fileName)) {
+                    // Remove the file from the sync list
+                    syncList.remove(fileName);
                 }
             }
-    }
 
+            for (String fileName : newList.keySet()) {
+                // Check if the old list does not contain the file name from the new list
+                if (!oldList.containsKey(fileName)) {
+                    // Add the file name to the sync list
+                    syncList.put(fileName, newList.get(fileName));
+                }
+
+                // Update the lock value
+                // true = locked
+                // false = unlocked
+                syncList.replace(fileName, newList.get(fileName));
+            }
+
+            // The old list becomes the new list
+            oldList = new HashMap<>(newList);
+
+            // Update the list stored by the node based on the agent’s list
+            ClientApplication.client.setSyncList(syncList);
+
+            try {
+                sleep(10000);
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

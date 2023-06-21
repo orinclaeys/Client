@@ -19,11 +19,15 @@ import java.util.*;
 import java.util.List;
 
 public class HttpModule{
+    public HttpModule() {}
     private final Client node = ClientApplication.client;
     private final static String serverIP="172.30.0.5";
 
-    public HttpModule() {}
-
+    /**
+     * ---------
+     * DISCOVERY
+     * ---------
+     */
     public void sendDiscovery(JSONObject message){
         try {
             HttpClient client = HttpClient.newHttpClient();
@@ -34,12 +38,11 @@ public class HttpModule{
                     .header("Content-type", "application/json")
                     .timeout(Duration.ofSeconds(1000))
                     .build();
-            //System.out.println("Client: Sending to server...");
 
             HttpResponse<String> Stringresponse = client.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
             JSONObject response = mapper.readValue(Stringresponse.body(),JSONObject.class);
-            //System.out.println("Client: Server response: "+response.toJSONString());
+
             ClientService service = new ClientService();
             service.handleDiscoveryResponse(response);
             Vector<String> IPlist = new Vector<String>((ArrayList<String>) response.get("IPlist"));
@@ -50,28 +53,12 @@ public class HttpModule{
                         .header("Content-type", "application/json")
                         .timeout(Duration.ofSeconds(1000))
                         .build();
-                //System.out.println("Client: Sending to client...");
 
                 HttpResponse<String> Stringresponse2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
                 JSONObject response2 = mapper.readValue(Stringresponse2.body(), JSONObject.class);
-                //System.out.println("Client: Client response: "+response2);
                 service.handleDiscoveryResponse(response2);
             }
 
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-
-    }
-    public void askReplicationFiles(String DestinationIP, String nodeName, String nodeIP){
-        //System.out.println("HttpModule: askReplication to " + DestinationIP);
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+DestinationIP+":8081/ProjectY/Client/Discovery/askReplicationFiles/"+nodeName+"/"+nodeIP))
-                .build();
-        try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -88,75 +75,7 @@ public class HttpModule{
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-
     }
-    public void sendFailure(int nodeID) throws IOException, InterruptedException {
-        try {
-            HttpClient httpClient = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://"+serverIP+":8080/ProjectY/Failure/"+nodeID))
-                    .DELETE()
-                    .build();
-            //System.out.println("Client: Sending to server...");
-            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-    public void sendFailureAgent(String IP, JSONObject message){
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IP+":8080/ProjectY/Client/FailureAgent"))
-                .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
-                .header("Content-type", "application/json")
-                .timeout(Duration.ofSeconds(1000))
-                .build();
-        try {
-            client.send(request,HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void sendUpdatePreviousNode(String IPAddress, int nextID){
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest requestPreviousNode = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/PreviousNode/"+ nextID))
-                .PUT(HttpRequest.BodyPublishers.noBody())
-                .build();
-        try {
-            HttpResponse<String> response = httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void sendUpdateNextNode(String IPAddress, int previousID){
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest requestPreviousNode = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/NextNode/"+ previousID))
-                .PUT(HttpRequest.BodyPublishers.noBody())
-                .build();
-        try {
-            HttpResponse<String> response = httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void sendShutdown(String name){
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest requestDeleteNode = HttpRequest.newBuilder()
-                //.uri(URI.create("http://localhost:8080/ProjectY/NamingServer/deleteNode"+name))
-                .uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/deleteNode/"+name))
-                .DELETE()
-                .build();
-        try {
-            HttpResponse<String> responseDeleteNode = httpClient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
     public String sendPreviousIPRequest(int previousID) {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -169,9 +88,121 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
-    public JSONObject sendReplication(JSONObject message){
-        //System.out.println("HttpModule: sendReplication: " + message);
+    public void sendUpdateNextNode(String IPAddress, int previousID){
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest requestPreviousNode = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/NextNode/"+ previousID))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        try {
+            httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void sendUpdatePreviousNode(String IPAddress, int nextID){
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest requestPreviousNode = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/PreviousNode/"+ nextID))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        try {
+            httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    /**
+     * -----------
+     * REPLICATION
+     * -----------
+     */
+    public void askReplicationFiles(String DestinationIP, String nodeName, String nodeIP){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+DestinationIP+":8081/ProjectY/Client/Discovery/askReplicationFiles/"+nodeName+"/"+nodeIP))
+                .build();
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void getFile(String IP, String fileName){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/sendFile/"+fileName))
+                .build();
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void resetFileInformation(String IP, String fileName){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/resetFile/"+fileName))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void sendDeleteFile(String ip, String fileName){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+ip+":8081/ProjectY/Client/replication/sendDeleteFile/"+fileName))
+                .DELETE()
+                .build();
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void sendFailure(int nodeID){
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+serverIP+":8080/ProjectY/Failure/"+nodeID))
+                .DELETE()
+                .build();
+        try {
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void sendFileInformation(String IP, JSONObject message){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/sendFileInformation"))
+                .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
+                .header("Content-type", "application/json")
+                .timeout(Duration.ofSeconds(1000))
+                .build();
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void sendFileInformationUpdate(String IP, String fileName, String ReplicatedIP){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/update/"+fileName+"/"+ReplicatedIP))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public JSONObject sendReplication(JSONObject message){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 //.uri(URI.create("http://"+Client.ServerIP+":8080/ProjectY/NamingServer/replication"))
@@ -180,100 +211,35 @@ public class HttpModule{
                 .header("Content-type", "application/json")
                 .timeout(Duration.ofSeconds(1000))
                 .build();
-        //System.out.println("HttpModule: sending to server...");
         try {
             HttpResponse<String> stringResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
             JSONObject response =  mapper.readValue(stringResponse.body(), JSONObject.class);
-            //System.out.println("HttpModule: sendReplication response: "+ response);
             return response;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
-
-    public void sendFileInformation(String IP, JSONObject message){
-        //System.out.println("HttpModule: sendFileInformation");
-
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/sendFileInformation"))
-                    .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
-                    .header("Content-type", "application/json")
-                    .timeout(Duration.ofSeconds(1000))
-                    .build();
-        //System.out.println("Httpmodule: Sending to client");
-        try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("Httpmodule: fileInformation send to client");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void getFile(String IP, String fileName){
-        //System.out.println("HttpModule: requesting file");
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/sendFile/"+fileName))
-                .build();
-        //System.out.println("Httpmodule: Sending to client");
-        try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("Httpmodule: fileRequest send to client");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void resetFileInformation(String IP, String fileName){
-        //System.out.println("HttpModule: send reset ReplicationIP");
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/resetFile/"+fileName))
-                .PUT(HttpRequest.BodyPublishers.noBody())
-                .build();
-        //System.out.println("HttpModule:  Sending to file owner");
-        try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("Httpmodule: fileReset send to client");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void sendFileInformationUpdate(String IP, String fileName, String ReplicatedIP){
-        //System.out.println("HttpModule: send new ReplicationIP");
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/update/"+fileName+"/"+ReplicatedIP))
-                .PUT(HttpRequest.BodyPublishers.noBody())
-                .build();
-        //System.out.println("HttpModule:  Sending to file owner");
-        try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("Httpmodule: fileUpdate send to client");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void sendDeleteFile(String ip, String fileName){
-        System.out.println("HttpModule: sendDeleteFile: " + fileName);
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+ip+":8081/ProjectY/Client/replication/sendDeleteFile/"+fileName))
+    public void sendShutdown(String name){
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest requestDeleteNode = HttpRequest.newBuilder()
+                //.uri(URI.create("http://localhost:8080/ProjectY/NamingServer/deleteNode"+name))
+                .uri(URI.create("http://"+serverIP+":8080/ProjectY/NamingServer/deleteNode/"+name))
                 .DELETE()
                 .build();
-        System.out.println("HttpModule: sending to "+ip);
         try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            httpClient.send(requestDeleteNode, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    // Request the sync list
+    /**
+     * ----------
+     * SYNC AGENT
+     * ----------
+     */
     public Map<String, Boolean> sendSyncListRequest(String IP){
-        System.out.println("HttpModule: sendSyncListRequest to "+IP);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IP+":8081/ProjectY/Client/SyncAgent/sendSyncListRequest"))
@@ -294,102 +260,23 @@ public class HttpModule{
         }
     }
 
-    // Request the owner list
-    public Map<String, Boolean> sendOwnerListRequest(String IPAddress){
-        System.out.println("HttpModule: sendOwnerListRequest");
-
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/SyncAgent/sendOwnerListRequest"))
-                .GET()
-                .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, Boolean> list = mapper.readValue((JsonParser) response, Map.class);
-            return list;
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Send and update the sync list
-    public void sendSyncList(String IP, JSONObject message){
-        System.out.println("HttpModule: sendSyncList");
-
+    /**
+     * -------------
+     * FAILURE AGENT
+     * -------------
+     */
+    public void sendFailureAgent(String IP, JSONObject message){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IP+":8081/ProjectY/SyncAgent/SyncList"))
+                .uri(URI.create("http://"+IP+":8080/ProjectY/Client/FailureAgent"))
                 .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
                 .header("Content-type", "application/json")
                 .timeout(Duration.ofSeconds(1000))
                 .build();
-        System.out.println("Httpmodule: Sending to client");
         try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            client.send(request,HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
-
-    public Vector<String> sendFailureFileNameListRequest(String IPAddress, int failureID){
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/FailureAgent/sendFailureFileNameListRequest"+failureID))
-                .GET()
-                .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            Vector<String> list = new Vector<String>((ArrayList<String>) response);
-            return list;
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Boolean sendIsFileTransferredRequest(String IPAddress, String fileName){
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/FailureAgent/sendIsFileTransferredRequest"+fileName))
-                .GET()
-                .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            Boolean isFileTransferred = Boolean.parseBoolean(String.valueOf(response));
-            return isFileTransferred;
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Set new download location/ owner
-    public void sendNewOwner(String ip, String fileName){
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+ip+":8081/ProjectY/FailureAgent/sendNewOwner/"+fileName))
-                .PUT(HttpRequest.BodyPublishers.noBody())
-                .timeout(Duration.ofSeconds(1000))
-                .build();
-        System.out.println("HttpModule: sending to "+ip+"...");
-        try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Integer sendNextIDRequest(int ID) {
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/FailureAgent/sendNextIDRequest"+ ID))
-                .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
-            return Integer.parseInt(response.body());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
-

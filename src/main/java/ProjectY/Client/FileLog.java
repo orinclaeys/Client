@@ -6,11 +6,12 @@ import org.json.simple.JSONObject;
 import java.util.Vector;
 
 public class FileLog {
-    private final String fileName;
     private final int fileID;
+    private final String fileName;
     private int owner;
     private String ownerIP;
     private String replicatedOwner;
+
     public FileLog(String fileName, int fileID) {
         this.fileName = fileName;
         this.fileID = fileID;
