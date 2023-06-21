@@ -147,6 +147,8 @@ public class Client {
                 if (fileLog.getReplicatedOwner() != null) {  //File is not replicated
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                     deleteLog.add(fileLog.getFileName());
+                }else{
+                    deleteLog.add(fileLog.getFileName());
                 }
             }
         }
