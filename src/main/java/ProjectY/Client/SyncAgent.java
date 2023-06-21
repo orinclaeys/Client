@@ -59,7 +59,8 @@ public class SyncAgent implements Runnable, Serializable {
 
                 // The old list becomes the new list
                 oldList = new HashMap<>(newList);
-                System.out.println("oldListList: "+oldList);
+                System.out.println("oldList: "+oldList);
+                System.out.println("new syncList: "+syncList);
 
                 // Update the list stored by the node based on the agent’s list
                 ClientApplication.client.setSyncList(oldList);
