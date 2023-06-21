@@ -86,7 +86,7 @@ public class RESTControllerClient {
     }
 
     @GetMapping(path = "Client/FailureAgent/sendFailureFileNameListRequest/{failureID}")
-    public JSONObject sendFailureFileNameListRequest(@PathVariable("fileureID") int failureID){
+    public JSONObject sendFailureFileNameListRequest(@PathVariable("failureID") int failureID){
         ClientService clientService = new ClientService();
         return clientService.handleFailureFileNameList(failureID);
     }
