@@ -60,11 +60,11 @@ public class Client {
 
     public boolean updateNextID(String name){
         int newID = Hash(name);
-        if(NodeType=="FirstNode"){
+        if(NodeType.equals("FirstNode")){
             this.previousID=newID;
             this.nextID=newID;
             return true;
-        }else if (NodeType=="EdgeNodeRight"){
+        }else if (NodeType.equals("EdgeNodeRight")){
             if(newID>this.currentID || newID<nextID){
                 this.nextID=newID;
                 return true;
@@ -82,11 +82,11 @@ public class Client {
     }
     public boolean updatePreviousID(String name) {
         int newID = Hash(name);
-        if(NodeType=="FirstNode"){
+        if(Objects.equals(NodeType, "FirstNode")){
             this.previousID=newID;
             this.nextID=newID;
             return true;
-        }else if(NodeType=="EdgeNodeLeft"){
+        }else if(Objects.equals(NodeType, "EdgeNodeLeft")){
             if(newID > this.previousID || newID < currentID){
                 this.previousID=newID;
                 return true;
@@ -103,7 +103,6 @@ public class Client {
 
         }
     }
-    public int getPreviousId() {return previousID;}
     public void setPreviousId(int previousId) {previousID = previousId;}
     public int getNextId() {return nextID;}
     public void setNextId(int nextId) {nextID = nextId;}
@@ -174,7 +173,6 @@ public class Client {
         // Remove the node from the naming server's map.
         //System.out.println("Client: Shutdown: Notifying server");
         httpModule.sendShutdown(this.name);
-        System.out.println("Client: Shutdown completed");
     }
     public void Failure(String nodeName) throws IOException, InterruptedException {
         System.out.println("Client: Failure: ");
@@ -204,13 +202,11 @@ public class Client {
 
     }
 
-    public String getName() {return name;}
-
     public void askReplicationFiles(String newNode, String newNodeIP) {
-        System.out.println(fileLogList);
+        //System.out.println(fileLogList);
         Vector<String> deletedFiles = new Vector<>();
         for(FileLog fileLog : fileLogList){
-            System.out.println(fileLog.getFileName());
+            //System.out.println(fileLog.getFileName());
             if(fileLog.getOwnerIP().equals(IPAddres)) {
                 if(Hash(newNode)<fileLog.getFileID()) {
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
@@ -232,7 +228,7 @@ public class Client {
         }
         for(String fileName: deletedFiles){
             deleteFile(fileName);
-            System.out.println("Deleting "+fileName);
+            //System.out.println("Deleting "+fileName);
         }
     }
     public void print(){
@@ -274,7 +270,7 @@ public class Client {
                 replication(fileLog, replicatedOwnerIP);
             }
         }
-        if(this.NodeType!="FirstNode") {         //ask from previousnode which files to replicate
+        if(!Objects.equals(this.NodeType, "FirstNode")) {         //ask from previousnode which files to replicate
             this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID), name, IPAddres);
         }
     }
@@ -347,7 +343,7 @@ public class Client {
     public Vector<String> getReplicatedOwnerFileNamesList() {
         Vector<String> replicatedOwnerFileNamesList = new Vector<>();
         for (FileLog fileLog : fileLogList){
-            if(fileLog.getReplicatedOwner()==IPAddres) {
+            if(Objects.equals(fileLog.getReplicatedOwner(), IPAddres)) {
                 replicatedOwnerFileNamesList.add(fileLog.getFileName());
             }
         }
@@ -498,7 +494,7 @@ public class Client {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
-                    if (file.equals(fileName)) {
+                    if (file.getName().equals(fileName)) {
                         response = true;
                     }
                 }
@@ -509,7 +505,7 @@ public class Client {
 
     public void setNewOwner(String fileName) {
         for (FileLog fileLog : fileLogList) {
-            if (fileLog.getFileName() == fileName) {
+            if (Objects.equals(fileLog.getFileName(), fileName)) {
                 fileLog.setOwner(currentID);
                 fileLog.setOwnerIP(IPAddres);
                 // EDIT THE REPLICATED OWNER & OWNER IP?
