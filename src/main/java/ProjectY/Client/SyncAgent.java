@@ -25,18 +25,19 @@ public class SyncAgent implements Runnable, Serializable {
                 // The new list is equal to the list of the nodes that the current node owns
                 //newList = httpModule.sendOwnerListRequest(IP);
                 newList = ClientApplication.client.getOwnerList();
+                System.out.println("Run: newList: "+newList);
 
                 // Get the IP of the next node
                 //String nextIP = httpModule.sendPreviousIPRequest(ID);
                 String nextIP = httpModule.sendIPRequest(ClientApplication.client.getNextId());
                 // The list is equal to the sync list of the next node
                 syncList = httpModule.sendSyncListRequest(nextIP);
+                System.out.println("Run: syncList: "+syncList);
 
                 // The new list does not contain the old file name -> remove the file name from the list
                 for (String fileName : oldList.keySet()) {
                     if (!newList.containsKey(fileName)) {
                         syncList.remove(fileName);
-                        System.out.println("syncList: "+syncList);
                     }
                 }
 
@@ -45,7 +46,6 @@ public class SyncAgent implements Runnable, Serializable {
                 for (String fileName : newList.keySet()) {
                     if (!oldList.containsKey(fileName)) {
                         syncList.put(fileName, newList.get(fileName));
-                        System.out.println("syncList: "+syncList);
                     }
 
                     // Update the lock value
@@ -57,8 +57,8 @@ public class SyncAgent implements Runnable, Serializable {
                     syncList.replace(fileName, newList.get(fileName));
                 }
 
-                // The new list becomes the old list
-                oldList = newList;
+                // The old list becomes the new list
+                oldList = new HashMap<>(newList);
                 System.out.println("oldListList: "+oldList);
 
                 // Update the list stored by the node based on the agent’s list
