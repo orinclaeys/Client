@@ -390,7 +390,9 @@ public class Client {
         for(FileLog fileLog: fileLogList){
             if(fileName.equals(fileLog.getFileName())){
                 fileLog.setReplicatedOwner(ReplicationIP);
-                tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), fileLog.getReplicatedOwner(),fileLog.getFileName());
+                if(ReplicationIP!=null){
+                    tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), fileLog.getReplicatedOwner(),fileLog.getFileName());
+                }
             }
         }
     }
