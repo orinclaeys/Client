@@ -121,7 +121,8 @@ public class ClientService extends Thread {
         JSONObject response = new JSONObject();
         System.out.println("Sending list: "+client.getSyncList());
         String jsonStr = new ObjectMapper().writeValueAsString(client.getSyncList());
-        response.put("SyncList", jsonStr);
+        response.put("Keys", client.getSyncList().keySet().toArray());
+        response.put("Values",client.getSyncList().values().toArray());
         return response;
     }
 

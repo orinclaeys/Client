@@ -69,7 +69,7 @@ public class RESTControllerClient {
     public JSONObject sendSyncListRequest() throws JsonProcessingException {
         System.out.println("Requesting SyncList");
         ClientService clientService = new ClientService();
-        System.out.println("SyncList sent");
+        System.out.println("SyncList sent ");
         return clientService.handleSyncListRequest();
     }
 

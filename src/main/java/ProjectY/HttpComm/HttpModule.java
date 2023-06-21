@@ -277,8 +277,12 @@ public class HttpModule{
             HttpResponse<String> stringResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
             JSONObject response = mapper.readValue(stringResponse.body(),JSONObject.class);
-            Map<String,Boolean> list = (Map<String, Boolean>) response.get("SyncList");
-            System.out.println("SyncList response: "+list.get("SyncList"));
+            String keys[] = (String[]) response.get("Keys");
+            Boolean values[] = (Boolean[]) response.get("Values");
+            HashMap<String,Boolean> list = new HashMap<>();
+            for(int i=0;i< keys.length;i++){
+                list.put(keys[i],values[i]);
+            }
             return list;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
