@@ -32,7 +32,7 @@ public class Client {
     //public SyncAgent syncAgent = new SyncAgent();
     private Timer timer;
 
-    public SyncAgent syncAgent;
+    public SyncAgent syncAgent = new SyncAgent();
     private Map<String, Boolean> syncList = new HashMap<>();
     private Boolean isLocked = false;
 
@@ -46,14 +46,14 @@ public class Client {
         this.currentID = Hash(this.name);
         this.previousID = this.currentID;
         this.nextID = this.currentID;
-        this.syncAgent = new SyncAgent(IPAddres, currentID);
     }
 
     public void initialize(){
-        Thread syncAgentThread = new Thread(syncAgent);
-        syncAgentThread.start();
         Discovery();
-        verifyFiles();
+        //verifyFiles();
+        // Start syncAgentThread
+        //Thread syncAgentThread = new Thread(syncAgent);
+        //syncAgentThread.start();
     }
 
     public boolean updateNextID(String name){
@@ -371,6 +371,10 @@ public class Client {
             }
             if(command.equals("List")){
                 System.out.println(fileLogList);
+            }
+            if(command.equals("Agents")){
+                Thread syncAgentThread = new Thread(syncAgent);
+                syncAgentThread.start();
             }
         }
     }

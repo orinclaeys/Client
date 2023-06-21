@@ -14,13 +14,6 @@ public class SyncAgent implements Runnable, Serializable {
     private Map<String, Boolean> newList = new HashMap<>();
     private Map<String, Boolean> syncList = new HashMap<>();
     private HttpModule httpModule = new HttpModule();
-    private String IP;
-    private int ID;
-
-    public SyncAgent(String IP, int ID) {
-        this.IP = IP;
-        this.ID = ID;
-    }
 
     @Override
     public void run() {
@@ -30,12 +23,14 @@ public class SyncAgent implements Runnable, Serializable {
             //public void run() {
                 // Listing all files owned by the node at which this agent runs
                 // The new list is equal to the list of the nodes that the current node owns
-                newList = (Map<String, Boolean>) httpModule.sendOwnerListRequest(IP);
+                //newList = httpModule.sendOwnerListRequest(IP);
+                newList = ClientApplication.client.getOwnerList();
 
                 // Get the IP of the next node
-                String nextIP = httpModule.sendPreviousIPRequest(ID);
+                //String nextIP = httpModule.sendPreviousIPRequest(ID);
+                String nextIP = httpModule.sendIPRequest(ClientApplication.client.getNextId());
                 // The list is equal to the sync list of the next node
-                syncList = (Map<String, Boolean>) httpModule.sendSyncListRequest(IP);
+                syncList = httpModule.sendSyncListRequest(nextIP);
 
                 // The new list does not contain the old file name -> remove the file name from the list
                 for (String fileName : oldList.keySet()) {
@@ -64,10 +59,7 @@ public class SyncAgent implements Runnable, Serializable {
                 oldList = newList;
 
                 // Update the list stored by the node based on the agent’s list
-                JSONObject JSONSyncList = new JSONObject();
-                String jsonStr = JSONValue.toJSONString(syncList);
-                JSONSyncList.put("SyncList", jsonStr);
-                httpModule.sendSyncList(IP, JSONSyncList);
+                ClientApplication.client.setSyncList(syncList);
             //}
        // }, 0, 5000);
     }
