@@ -29,9 +29,12 @@ public class Client {
     private TcpModule tcpModule = new TcpModule();
     public static String ServerIP = "172.30.0.5";
     private Vector<FileLog> fileLogList = new Vector<>();
-    public SyncAgent syncAgent = new SyncAgent();
+    //public SyncAgent syncAgent = new SyncAgent();
     private Timer timer;
 
+    public SyncAgent syncAgent;
+    private Map<String, Boolean> syncList = new HashMap<>();
+    private Boolean isLocked = false;
 
     public Client() {
         System.out.println("Enter name: ");
@@ -43,11 +46,14 @@ public class Client {
         this.currentID = Hash(this.name);
         this.previousID = this.currentID;
         this.nextID = this.currentID;
+        this.syncAgent = new SyncAgent(IPAddres, currentID);
     }
 
     public void initialize(){
+        Thread syncAgentThread = new Thread(syncAgent);
+        syncAgentThread.start();
         Discovery();
-        //verifyFiles();
+        verifyFiles();
     }
 
     public boolean updateNextID(String name){
@@ -174,6 +180,15 @@ public class Client {
         message.put("Failed node ID", Hash(nodeName));
         message.put("Failed node name",nodeName);
         httpModule.sendFailure(message);
+
+        FailureAgent failureAgent = new FailureAgent(currentID, Hash(nodeName));
+        Thread failureAgentThread = new Thread(failureAgent);
+        failureAgentThread.start();
+        // MOET DAT WEL HIER STAAN?
+        //if (failureAgent.terminate()) {
+            // MOET DIE NODE NOG VERWIJDERD WORDEN?
+            //failureAgentThread.interrupt();
+        //}
     }
 
     public void Discovery(){
@@ -325,6 +340,17 @@ public class Client {
         return fileNamesList;
     }
 
+
+    public Vector<String> getReplicatedOwnerFileNamesList() {
+        Vector<String> replicatedOwnerFileNamesList = new Vector<>();
+        for (FileLog fileLog : fileLogList){
+            if(fileLog.getReplicatedOwner()==IPAddres) {
+                replicatedOwnerFileNamesList.add(fileLog.getFileName());
+            }
+        }
+        return replicatedOwnerFileNamesList;
+    }
+
     public void run(){
         boolean running=true;
         while(running){
@@ -424,12 +450,62 @@ public class Client {
 
     public String getIPAddres() {return IPAddres;}
 
-    public Vector<String> getOwnerFileNamesList(Vector<FileLog> fileLogList) {
-        Vector <String> fileNamesList = new Vector<>();
-        for (int i=0; i < fileLogList.size(); i++){
-            if (fileLogList.get(i).getOwner() == currentID)
-                fileNamesList.add(fileLogList.get(i).getFileName());
+
+    public Map<String, Boolean> getOwnerList() {
+        Map<String, Boolean> ownerList = new HashMap<>();
+        for (FileLog fileLog : fileLogList) {
+            if (fileLog.getOwner() == currentID)
+                // Information on whether there is an active lock on the node or not
+                // true = locked
+                // false = unlocked
+                ownerList.put(fileLog.getFileName(), isLocked);
         }
-        return fileNamesList;
+        return ownerList;
+    }
+
+    public Map<String, Boolean> getSyncList() {
+        return syncList;
+    }
+
+    public void setSyncList(Map<String, Boolean> syncList) {
+        this.syncList = syncList;
+    }
+
+    // Failure agent
+    public Vector<String> getFailureFileNameList(int failureID) {
+        Vector <String> failureFileNameList = new Vector<>();
+        for (FileLog fileLog : fileLogList) {
+            if (fileLog.getOwner() == failureID) {
+                failureFileNameList.add(fileLog.getFileName());
+            }
+        }
+        return failureFileNameList;
+    }
+
+    public boolean isFileTransferred(String fileName) {
+        boolean response = false;
+        File folder = new File("src/main/java/ProjectY/Client/Files");
+        File[] files = folder.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (file.equals(fileName)) {
+                        response = true;
+                    }
+                }
+            }
+        }
+        return response;
+    }
+
+    public void setNewOwner(String fileName) {
+        for (FileLog fileLog : fileLogList) {
+            if (fileLog.getFileName() == fileName) {
+                fileLog.setOwner(currentID);
+                fileLog.setOwnerIP(IPAddres);
+                // EDIT THE REPLICATED OWNER & OWNER IP?
+            }
+        }
     }
 }

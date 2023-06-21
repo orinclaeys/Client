@@ -1,47 +1,75 @@
 package ProjectY.Client;
 
 import ProjectY.HttpComm.HttpModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
-public class SyncAgent {
-
-    private List<String> fileListOld;
-    private List<String> fileListNew;
-    private List<String> fileList;
+public class SyncAgent implements Runnable, Serializable {
+    private Map<String, Boolean> oldList = new HashMap<>();
+    private Map<String, Boolean> newList = new HashMap<>();
+    private Map<String, Boolean> syncList = new HashMap<>();
     private HttpModule httpModule = new HttpModule();
-    public void updateList(String IP, Vector<String> fileVector) {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                fileListNew = fileVector;
-                // The file list is equal to the file list of the next node
-                fileList = httpModule.getFileList(IP);
-                // for testing:
-                //fileList = Arrays.asList("a", "b", "c");
-                //System.out.println("fileList : "+fileList);
+    private String IP;
+    private int ID;
+
+    public SyncAgent(String IP, int ID) {
+        this.IP = IP;
+        this.ID = ID;
+    }
+
+    @Override
+    public void run() {
+        //Timer timer = new Timer();
+        //timer.schedule(new TimerTask() {
+            //@Override
+            //public void run() {
+                // Listing all files owned by the node at which this agent runs
+                // The new list is equal to the list of the nodes that the current node owns
+                newList = (Map<String, Boolean>) httpModule.sendOwnerListRequest(IP);
+
+                // Get the IP of the next node
+                String nextIP = httpModule.sendPreviousIPRequest(ID);
+                // The list is equal to the sync list of the next node
+                syncList = (Map<String, Boolean>) httpModule.sendSyncListRequest(IP);
+
                 // The new list does not contain the old file name -> remove the file name from the list
-                for (String fileName : fileListOld) {
-                    if (!fileListNew.contains(fileName)) {
-                        fileList.remove(fileName);
+                for (String fileName : oldList.keySet()) {
+                    if (!newList.containsKey(fileName)) {
+                        syncList.remove(fileName);
                     }
                 }
+
+                // If one of the owned files is not added to the list, the list needs to be updated
                 // The old list does not contain the new file name -> add the file name to the list
-                for (String fileName : fileListNew) {
-                    if (!fileListOld.contains(fileName)) {
-                        fileList.add(fileName);
+                for (String fileName : newList.keySet()) {
+                    if (!oldList.containsKey(fileName)) {
+                        syncList.put(fileName, newList.get(fileName));
                     }
+
+                    // Update the lock value
+                    // If there is a lock request on the current node, and the file is not locked on the agent’s list,
+                    // locking should be enabled on the node and the list should be synchronized accordingly
+                    // Remove the lock when it is not needed anymore, and update local file list accordingly
+                    // true = locked
+                    // false = unlocked
+                    syncList.replace(fileName, newList.get(fileName));
                 }
+
                 // The new list becomes the old list
-                fileListOld = fileListNew;
-            }
-        }, 0, 5000);
+                oldList = newList;
+
+                // Update the list stored by the node based on the agent’s list
+                JSONObject JSONSyncList = new JSONObject();
+                String jsonStr = JSONValue.toJSONString(syncList);
+                JSONSyncList.put("SyncList", jsonStr);
+                httpModule.sendSyncList(IP, JSONSyncList);
+            //}
+       // }, 0, 5000);
     }
 
-
-    public List<String> getFileList() {
-        return fileList;
-    }
 }

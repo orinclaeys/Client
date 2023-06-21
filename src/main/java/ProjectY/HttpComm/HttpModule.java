@@ -3,6 +3,7 @@ package ProjectY.HttpComm;
 import ProjectY.Client.Client;
 import ProjectY.Client.ClientApplication;
 import ProjectY.Client.ClientService;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 
@@ -15,6 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Vector;
 import java.util.List;
 
@@ -265,18 +267,121 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
-    public List<String> getFileList(String IPAddress){
+
+    // Request the sync list
+    public Map<String, Boolean> sendSyncListRequest(String IPAddress){
+        System.out.println("HttpModule: sendSyncListRequest");
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/SyncAgent"))
+                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/SyncAgent/sendSyncListRequest"))
                 .GET()
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            return (List<String>) response;
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Boolean> list = mapper.readValue((JsonParser) response, Map.class);
+            return list;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
+    // Request the owner list
+    public Map<String, Boolean> sendOwnerListRequest(String IPAddress){
+        System.out.println("HttpModule: sendOwnerListRequest");
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/SyncAgent/sendOwnerListRequest"))
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Boolean> list = mapper.readValue((JsonParser) response, Map.class);
+            return list;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Send and update the sync list
+    public void sendSyncList(String IP, JSONObject message){
+        System.out.println("HttpModule: sendSyncList");
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IP+":8081/ProjectY/SyncAgent/SyncList"))
+                .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
+                .header("Content-type", "application/json")
+                .timeout(Duration.ofSeconds(1000))
+                .build();
+        System.out.println("Httpmodule: Sending to client");
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Vector<String> sendFailureFileNameListRequest(String IPAddress, int failureID){
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/FailureAgent/sendFailureFileNameListRequest"+failureID))
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            Vector<String> list = new Vector<String>((ArrayList<String>) response);
+            return list;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Boolean sendIsFileTransferredRequest(String IPAddress, String fileName){
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IPAddress+":8081/ProjectY/FailureAgent/sendIsFileTransferredRequest"+fileName))
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            Boolean isFileTransferred = Boolean.parseBoolean(String.valueOf(response));
+            return isFileTransferred;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Set new download location/ owner
+    public void sendNewOwner(String ip, String fileName){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+ip+":8081/ProjectY/FailureAgent/sendNewOwner/"+fileName))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .timeout(Duration.ofSeconds(1000))
+                .build();
+        System.out.println("HttpModule: sending to "+ip+"...");
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Integer sendNextIDRequest(int ID) {
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/ProjectY/NamingServer/FailureAgent/sendNextIDRequest"+ ID))
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+            return Integer.parseInt(response.body());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 

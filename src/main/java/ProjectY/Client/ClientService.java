@@ -2,9 +2,14 @@ package ProjectY.Client;
 
 import ProjectY.HttpComm.HttpModule;
 import ProjectY.HttpComm.TcpModule;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Vector;
 
 
@@ -111,11 +116,41 @@ public class ClientService extends Thread {
         client.deleteFile(fileName);
     }
 
-    public JSONObject handleSync(){
+    public JSONObject handleSyncListRequest(){
         JSONObject response = new JSONObject();
-        JSONArray fileArray = new JSONArray();
-        fileArray = (JSONArray) client.syncAgent.getFileList();
-        response.put("List", fileArray);
+        String jsonStr = JSONValue.toJSONString(client.getSyncList());
+        response.put("SyncList", jsonStr);
         return response;
+    }
+
+    public JSONObject handleOwnerListRequest(){
+        JSONObject response = new JSONObject();
+        String jsonStr = JSONValue.toJSONString(client.getOwnerList());
+        response.put("OwnerList", jsonStr);
+        return response;
+    }
+
+    public void handleSyncList(JSONObject message) throws IOException {
+        System.out.println("Client: Handle syncList");
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Boolean> syncList = mapper.readValue((JsonParser) message.get("SyncList"), Map.class);
+        client.setSyncList(syncList);
+    }
+
+    public JSONObject handleFailureFileNameList(int failureID){
+        JSONObject response = new JSONObject();
+        Vector<String> failureFileNameList = client.getFailureFileNameList(failureID);
+        response.put("FailureFileNameList", failureFileNameList);
+        return response;
+    }
+
+    public JSONObject handleIsFileTransferred(String fileName){
+        JSONObject response = new JSONObject();
+        response.put("isFileTransferred", client.isFileTransferred(fileName));
+        return response;
+    }
+
+    public void handleNewOwner(String fileName){
+        client.setNewOwner(fileName);
     }
 }

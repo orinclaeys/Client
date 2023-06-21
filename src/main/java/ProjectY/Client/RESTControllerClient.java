@@ -64,10 +64,40 @@ public class RESTControllerClient {
         System.out.println("Handled replication request");
     }
 
-    @GetMapping(path = "Client/SyncAgent")
-    public JSONObject sendSync(){
+    @PutMapping(path = "Client/SyncAgent/sendSyncListRequest")
+    public JSONObject sendSyncListRequest(){
         ClientService clientService = new ClientService();
-        return clientService.handleSync();
+        return clientService.handleSyncListRequest();
+    }
+
+    @PutMapping(path = "Client/SyncAgent/sendOwnerListRequest")
+    public JSONObject sendOwnerListRequest(){
+        ClientService clientService = new ClientService();
+        return clientService.handleOwnerListRequest();
+    }
+
+    @PostMapping(path = "Client/SyncAgent/sendSyncList")
+    public void sendOwnerListRequest(@RequestBody JSONObject syncList) throws IOException {
+        ClientService clientService = new ClientService();
+        clientService.handleSyncList(syncList);
+    }
+
+    @GetMapping(path = "Client/FailureAgent/sendFailureFileNameListRequest/{failureID}")
+    public JSONObject sendFailureFileNameListRequest(@PathVariable("fileureID") int failureID){
+        ClientService clientService = new ClientService();
+        return clientService.handleFailureFileNameList(failureID);
+    }
+
+    @GetMapping(path = "Client/FailureAgent/sendIsFileTransferredRequest/{fileName}")
+    public JSONObject sendIsFileTransferred(@PathVariable("fileName") String fileName){
+        ClientService clientService = new ClientService();
+        return clientService.handleIsFileTransferred(fileName);
+    }
+
+    @PostMapping(path = "Client/FailureAgent/sendNewOwner/{fileName}")
+    public void sendNewOwner(@PathVariable("fileName") String fileName){
+        ClientService clientService = new ClientService();
+        clientService.handleNewOwner(fileName);
     }
     @PutMapping(path="Client/replication/update/{fileName}/{replicationIP}")
     public void updateReplicationIP(@PathVariable("fileName") String fileName,@PathVariable("replicationIP") String replicationIP){
