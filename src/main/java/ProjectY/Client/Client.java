@@ -126,14 +126,14 @@ public class Client {
             if (!fileLog.getOwnerIP().equals(this.IPAddres)) { //File is replicated
                 if (fileLog.getReplicatedOwner().equals(this.IPAddres)) { //Replicated Files need to be send to previousnode
                     if (fileLog.getOwner() == previousID) { //owner==previousnode ==> previous previous node
-                        if (NodeType.equals("NormalNode")) { //send to previous previous node
+                        if (ipPreviousPreviousNode.equals(IPAddres)) { //send back to owner
+                            deleteFiles.add(fileLog.getFileName());
+                            httpModule.resetFileInformation(fileLog.getOwnerIP(), fileLog.getFileName());
+                        }
+                        else{ //send to previous previous node
                             tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
                             httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousPreviousNode);
                             deleteFiles.add(fileLog.getFileName());
-                        }
-                        if (NodeType.equals("EdgeNodeRight") || NodeType.equals("EdgeNodeLeft")) { //send back to owner
-                            deleteFiles.add(fileLog.getFileName());
-                            httpModule.resetFileInformation(fileLog.getOwnerIP(), fileLog.getFileName());
                         }
                     } else { //owner!=previousnode => send to previous node
                         tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
