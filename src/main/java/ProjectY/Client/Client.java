@@ -54,6 +54,7 @@ public class Client {
         System.out.println("ID: "+this.currentID);
         System.out.println("NextID: "+this.nextID);
         System.out.println("FileLogList: "+this.fileLogList);
+        System.out.println("SyncList: "+this.syncList);
         System.out.println("-------------------");
     }
     public void run(){
