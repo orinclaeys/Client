@@ -119,26 +119,27 @@ public class Client {
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
         for (FileLog fileLog : fileLogList) {
-            if (fileLog.getReplicatedOwner().equals(this.IPAddres)) { //Replicated Files need to be send to previousnode
-                if (fileLog.getOwner() == previousID) { //owner==previousnode ==> previous previous node
-                    if(NodeType.equals("NormalNode")) { //send to previous previous node
-                        tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
-                        httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousPreviousNode);
+            if(!fileLog.getOwnerIP().equals(this.IPAddres)) { //File is replicated
+                if (fileLog.getReplicatedOwner().equals(this.IPAddres)) { //Replicated Files need to be send to previousnode
+                    if (fileLog.getOwner() == previousID) { //owner==previousnode ==> previous previous node
+                        if (NodeType.equals("NormalNode")) { //send to previous previous node
+                            tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
+                            httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousPreviousNode);
+                            deleteFile(fileLog.getFileName());
+                        }
+                        if (NodeType.equals("EdgeNodeRight") || NodeType.equals("EdgeNodeLeft")) { //send back to owner
+                            deleteFile(fileLog.getFileName());
+                            httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), null);
+                        }
+                    } else { //owner!=previousnode => send to previous node
+                        tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
+                        httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousNode);
                         deleteFile(fileLog.getFileName());
-                    }
-                    if(NodeType.equals("EdgeNodeRight")||NodeType.equals("EdgeNodeLeft")){ //send back to owner
-                        deleteFile(fileLog.getFileName());
-                        httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), null);
-                    }
-                }
-                else { //owner!=previousnode => send to previous node
-                    tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
-                    httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousNode);
-                    deleteFile(fileLog.getFileName());
 
+                    }
                 }
             }
-            if (fileLog.getOwnerIP().equals(this.IPAddres)) {  //Local files need to be deleted by replicator?
+            else{  //Local files need to be deleted by replicator?
                 if (fileLog.getReplicatedOwner()==null) {  //File is not replicated
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                 }
