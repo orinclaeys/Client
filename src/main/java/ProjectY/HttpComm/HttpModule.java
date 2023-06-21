@@ -274,10 +274,10 @@ public class HttpModule{
                 .uri(URI.create("http://"+IP+":8081/ProjectY/Client/SyncAgent/sendSyncListRequest"))
                 .build();
         try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> stringResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Map<String,Boolean>> list1 = mapper.readValue(response.body(), HashMap.class);
-            Map<String,Boolean> list = list1.get("SyncList");
+            JSONObject response = mapper.readValue(stringResponse.body(),JSONObject.class);
+            Map<String,Boolean> list = (Map<String, Boolean>) response.get("SyncList");
             System.out.println("SyncList response: "+list.get("SyncList"));
             return list;
         } catch (IOException | InterruptedException e) {
