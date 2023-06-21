@@ -67,7 +67,9 @@ public class RESTControllerClient {
 
     @PutMapping(path = "Client/SyncAgent/sendSyncListRequest")
     public JSONObject sendSyncListRequest() throws JsonProcessingException {
+        System.out.println("Requesting SyncList");
         ClientService clientService = new ClientService();
+        System.out.println("SyncList sent");
         return clientService.handleSyncListRequest();
     }
 
