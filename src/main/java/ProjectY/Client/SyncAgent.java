@@ -62,7 +62,7 @@ public class SyncAgent implements Runnable, Serializable {
                 System.out.println("oldListList: "+oldList);
 
                 // Update the list stored by the node based on the agent’s list
-                ClientApplication.client.setSyncList(syncList);
+                ClientApplication.client.setSyncList(oldList);
             //}
        // }, 0, 5000);
     }
