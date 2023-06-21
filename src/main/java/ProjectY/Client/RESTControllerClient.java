@@ -79,8 +79,10 @@ public class RESTControllerClient {
 
     @PostMapping(path = "Client/SyncAgent/sendSyncList")
     public void sendOwnerListRequest(@RequestBody JSONObject syncList) throws IOException {
+        System.out.println("Requesting SyncList");
         ClientService clientService = new ClientService();
         clientService.handleSyncList(syncList);
+        System.out.println("SyncList sent");
     }
 
     @GetMapping(path = "Client/FailureAgent/sendFailureFileNameListRequest/{failureID}")

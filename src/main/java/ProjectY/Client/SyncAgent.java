@@ -36,6 +36,7 @@ public class SyncAgent implements Runnable, Serializable {
                 for (String fileName : oldList.keySet()) {
                     if (!newList.containsKey(fileName)) {
                         syncList.remove(fileName);
+                        System.out.println("syncList: "+syncList);
                     }
                 }
 
