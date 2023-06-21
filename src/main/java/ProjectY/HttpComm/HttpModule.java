@@ -256,14 +256,14 @@ public class HttpModule{
         }
     }
     public void sendDeleteFile(String ip, String fileName){
-        //System.out.println("HttpModule: sendDeleteFile: " + fileName);
+        System.out.println("HttpModule: sendDeleteFile: " + fileName);
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+ip+":8081/ProjectY/Client/replication/sendDeleteFile/"+fileName))
                 .DELETE()
                 .build();
-        //System.out.println("HttpModule: sending to "+ip);
+        System.out.println("HttpModule: sending to "+ip);
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
