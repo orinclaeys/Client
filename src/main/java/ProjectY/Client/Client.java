@@ -380,6 +380,9 @@ public class Client {
                                 String replicatedOwnerIP = (String) response.get("ReplicatedOwnerIP");
                                 if(!Objects.equals(replicatedOwnerIP, IPAddres)) {
                                     replication(fileLog, replicatedOwnerIP);
+                                }else{
+                                    replicatedOwnerIP = httpModule.sendIPRequest(previousID);
+                                    replication(fileLog,replicatedOwnerIP);
                                 }
                             }
                         }
