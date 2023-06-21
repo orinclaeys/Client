@@ -30,6 +30,7 @@ public class Client {
     public static String ServerIP = "172.30.0.5";
     private Vector<FileLog> fileLogList = new Vector<>();
     public SyncAgent syncAgent = new SyncAgent();
+    private Timer timer = new Timer();
 
 
     public Client() {
@@ -115,7 +116,8 @@ public class Client {
         System.out.println("Client: Shutdown: Updating previous and next node");
         httpModule.sendUpdatePreviousNode(ipPreviousNode,nextID);
         httpModule.sendUpdateNextNode(ipNextNode,previousID);
-
+        //Cancel the timer that checks files
+        timer.cancel();
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
         Vector<String> deleteFiles = new Vector<>();
@@ -257,7 +259,6 @@ public class Client {
 
     // Check the local folder for changes at regular time intervals
     public void replicationUpdate(){
-        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
