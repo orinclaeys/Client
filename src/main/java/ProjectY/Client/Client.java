@@ -50,7 +50,9 @@ public class Client {
 
     public void initialize(){
         Discovery();
-        //verifyFiles();
+        verifyFiles();
+        replicationUpdate();
+        print();
         // Start syncAgentThread
         //Thread syncAgentThread = new Thread(syncAgent);
         //syncAgentThread.start();
@@ -192,7 +194,7 @@ public class Client {
     }
 
     public void Discovery(){
-        System.out.println("Client: Discovery...");
+        //System.out.println("Client: Discovery...");
         JSONObject message = new JSONObject();
         message.put("Type","Client");
         message.put("Message","Discovery");
@@ -238,11 +240,12 @@ public class Client {
         System.out.println("Client");
         System.out.println("-------------------");
         System.out.println("Name: "+this.name);
-        System.out.println("First node: "+this.NodeType);
+        System.out.println("Node type: "+this.NodeType);
         System.out.println("IP-Address: "+this.IPAddres);
         System.out.println("PreviousID: "+this.previousID);
         System.out.println("ID: "+this.currentID);
         System.out.println("NextID: "+this.nextID);
+        System.out.println("FileLogList: "+this.fileLogList);
         System.out.println("-------------------");
     }
 
@@ -251,12 +254,12 @@ public class Client {
         File[] contentOfDirectory = directory.listFiles();
         for (File object : contentOfDirectory) {  //Put files in fileLogList
             if (object.isFile()) {
-                System.out.println("Verify file name: " + object.getName());
+                //System.out.println("Verify file name: " + object.getName());
                 FileLog fileLog = new FileLog(object.getName(), Hash(object.getName()));
                 fileLog.setOwner(this.currentID);
                 fileLog.setOwnerIP(this.IPAddres);
                 fileLogList.add(fileLog);
-                System.out.println(fileLogList);
+                //System.out.println(fileLogList);
             }
         }
         for (FileLog fileLog : fileLogList) {     //send filesID's to server
@@ -367,6 +370,7 @@ public class Client {
             }
             if(command.equals("Files")){
                 verifyFiles();
+                print();
                 replicationUpdate();
             }
             if(command.equals("List")){
