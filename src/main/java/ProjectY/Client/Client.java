@@ -38,8 +38,8 @@ public class Client {
 
     public void initialize(){
         Discovery();
-        //verifyFiles();
-        //replicationUpdate();
+        verifyFiles();
+        replicationUpdate();
         // Start syncAgentThread
         //Thread syncAgentThread = new Thread(syncAgent);
         //syncAgentThread.start();
@@ -301,6 +301,7 @@ public class Client {
         System.out.println("ID: "+this.currentID);
         System.out.println("NextID: "+this.nextID);
         System.out.println("FileLogList: "+this.fileLogList);
+        System.out.println("SyncList: "+this.syncList);
         System.out.println("-------------------");
     }
 
