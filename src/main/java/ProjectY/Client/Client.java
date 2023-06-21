@@ -30,7 +30,7 @@ public class Client {
     public static String ServerIP = "172.30.0.5";
     private Vector<FileLog> fileLogList = new Vector<>();
     public SyncAgent syncAgent = new SyncAgent();
-    private Timer timer = new Timer();
+    private Timer timer;
 
 
     public Client() {
@@ -267,6 +267,7 @@ public class Client {
 
     // Check the local folder for changes at regular time intervals
     public void replicationUpdate(){
+        timer=new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {

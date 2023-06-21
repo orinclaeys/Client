@@ -83,8 +83,8 @@ public class RESTControllerClient {
     }
     @PutMapping(path="Client/replication/resetFile/{fileName}")
     public void resetFile(@PathVariable("fileName") String fileName){
-        System.out.println("Sending file "+fileName);
+        System.out.println("resetting file "+fileName);
         ClientApplication.client.updateReplicatedIP(fileName,null);
-        System.out.println("File send");
+        System.out.println("File reset");
     }
 }
