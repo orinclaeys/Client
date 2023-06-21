@@ -15,7 +15,7 @@ public class RESTControllerClient {
     @PostMapping(path = "Discovery")
     public JSONObject discoveryResponse(@RequestBody JSONObject response) {
         ClientService clientService = new ClientService();
-        System.out.println("Discovery received");
+        //System.out.println("Discovery received");
         System.out.println(response);
         return clientService.handleDiscovery((String) response.get("Name"));
     }
@@ -55,14 +55,14 @@ public class RESTControllerClient {
     @DeleteMapping(path="Client/replication/sendDeleteFile/{fileName}")
     public void deleteFile(@PathVariable("fileName") String fileName) {
         ClientService clientService = new ClientService();
-        System.out.println("Delete "+fileName);
+        //System.out.println("Delete "+fileName);
         clientService.handleDeleteFile(fileName);
     }
     @GetMapping(path="Client/Discovery/askReplicationFiles/{newNode}/{newNodeIP}")
     public void askReplicationFiles(@PathVariable("newNode") String newNode,@PathVariable("newNodeIP") String newNodeIP){
-        System.out.println("New node asking for replication files...");
+        //System.out.println("New node asking for replication files...");
         ClientApplication.client.askReplicationFiles(newNode,newNodeIP);
-        System.out.println("Handled replication request");
+        //System.out.println("Handled replication request");
     }
 
     @PutMapping(path = "Client/SyncAgent/sendSyncListRequest")
@@ -102,20 +102,20 @@ public class RESTControllerClient {
     }
     @PutMapping(path="Client/replication/update/{fileName}/{replicationIP}")
     public void updateReplicationIP(@PathVariable("fileName") String fileName,@PathVariable("replicationIP") String replicationIP){
-        System.out.println("Updating fileInformation");
+        //System.out.println("Updating fileInformation");
         ClientApplication.client.updateReplicatedIP(fileName,replicationIP);
-        System.out.println("fileInformation updated");
+        //System.out.println("fileInformation updated");
     }
     @GetMapping(path="Client/replication/sendFile/{fileName}")
     public void sendFile(@PathVariable("fileName") String fileName){
-        System.out.println("Sending file "+fileName);
+        //System.out.println("Sending file "+fileName);
         ClientApplication.client.getFile(fileName);
-        System.out.println("File send");
+        //System.out.println("File send");
     }
     @PutMapping(path="Client/replication/resetFile/{fileName}")
     public void resetFile(@PathVariable("fileName") String fileName){
-        System.out.println("resetting file "+fileName);
+        //System.out.println("resetting file "+fileName);
         ClientApplication.client.updateReplicatedIP(fileName,null);
-        System.out.println("File reset");
+        //System.out.println("File reset");
     }
 }

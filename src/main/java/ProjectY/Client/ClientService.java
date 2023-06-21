@@ -49,7 +49,7 @@ public class ClientService extends Thread {
     }
     public void handleDiscoveryResponse(JSONObject message){
         if(message.get("Sender").equals("Client")){
-            System.out.println("Message received form Client");
+            //System.out.println("Message received form Client");
             if(message.get("Update").equals(true)){
                 if((Integer) message.get("YourPreviousID")>0) {
                     this.client.setPreviousId((Integer) message.get("YourPreviousID"));
@@ -60,7 +60,7 @@ public class ClientService extends Thread {
             }
         }
         if(message.get("Sender").equals("NamingServer")){
-            System.out.println("Message received from Server");
+            //System.out.println("Message received from Server");
             if(message.get("Size").equals(1)){
                 this.client.NodeType="FirstNode";
                 this.client.setNextId(this.client.getCurrentId());
@@ -83,7 +83,7 @@ public class ClientService extends Thread {
     }
 
     public void handleFailureResponse(JSONObject response){
-        System.out.println("Client: Handle failure response");
+        //System.out.println("Client: Handle failure response");
         if(response.get("nextId").equals(client.getCurrentId())){
             client.setPreviousId((int) response.get("PreviousId"));
             System.out.println("PreviousId updated on next node");
@@ -100,7 +100,7 @@ public class ClientService extends Thread {
         TcpModule tcpModule = new TcpModule();
 
         if(message.get("DestinationAddress").equals(client.getIPAddres())) {
-            System.out.println("Client: handle file information");
+            //System.out.println("Client: handle file information");
             int portNumber = (int) message.get("PortNumber");
             String filename = (String) message.get("Filename");
             String ownerIP = (String) message.get("ownerIP");

@@ -12,9 +12,6 @@ import java.util.Vector;
 public class TcpModule implements Runnable{
     private static DataInputStream dataInputStream = null;
     private static DataOutputStream dataOutputStream = null;
-    public void replicateFile(FileLog fileLog) {
-        System.out.println("Replicate file");
-    }
     public int portnumber;
     public String Filename;
 
@@ -23,7 +20,7 @@ public class TcpModule implements Runnable{
     public void sendFile(int ownerID, String ownerIP,String ReplicatorIP, String filename){
         if (ReplicatorIP!=null) {
             try {
-                System.out.println("TCP: " + ownerIP + " Filename: " + filename + " to "+ReplicatorIP);
+                //System.out.println("TCP: " + ownerIP + " Filename: " + filename + " to "+ReplicatorIP);
 
                 HttpModule httpModule = new HttpModule();
                 int portNumber = 5005;
@@ -37,7 +34,7 @@ public class TcpModule implements Runnable{
 
                 //Socket socket = new Socket(destinationIP,portNumber);
                 Socket socket = new Socket(ReplicatorIP, portNumber);
-                System.out.println("CLIENT: connected to server. Sending file...");
+                //System.out.println("CLIENT: connected to server. Sending file...");
 
                 OutputStream outputStream = socket.getOutputStream();
 
@@ -49,7 +46,7 @@ public class TcpModule implements Runnable{
                     outputStream.write(buffer, 0, bytesRead);
                 }
 
-                System.out.println("CLIENT: File sent");
+                //System.out.println("CLIENT: File sent");
 
                 fileInputStream.close();
                 outputStream.close();
@@ -67,12 +64,12 @@ public class TcpModule implements Runnable{
             boolean end=false;
             ServerSocket serverSocket = new ServerSocket(portnumber);
 
-            System.out.println("SERVER: Listening on port " + portnumber);
+            //System.out.println("SERVER: Listening on port " + portnumber);
 
             while (!end){
                 Socket clientSocket = serverSocket.accept();
 
-                System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
+                //System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
 
                 InputStream inputStream = clientSocket.getInputStream();
 
@@ -84,7 +81,7 @@ public class TcpModule implements Runnable{
                     fileOutputStream.write(buffer,0,bytesRead);
                 }
 
-                System.out.println("File received and saved");
+                //System.out.println("File received and saved");
 
                 fileOutputStream.close();
                 inputStream.close();

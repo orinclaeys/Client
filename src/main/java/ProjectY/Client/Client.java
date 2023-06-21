@@ -112,21 +112,21 @@ public class Client {
         return (int) ((name.hashCode()+max)*(32768/(max+abs(min))));
     }
     public void shutdown(){
-        System.out.println("Client: Shutting down...");
+        //System.out.println("Client: Shutting down...");
         // Getting IP-Addresses of previous and next node
-        System.out.println("Client: Shutdown: Obtaining IP-adresses");
+        //System.out.println("Client: Shutdown: Obtaining IP-adresses");
         String ipPreviousNode = httpModule.sendIPRequest(previousID);
         String ipNextNode = httpModule.sendIPRequest(nextID);
 
         // Update the next and previous node parameters.
-        System.out.println("Client: Shutdown: Updating previous and next node");
+        //System.out.println("Client: Shutdown: Updating previous and next node");
         httpModule.sendUpdatePreviousNode(ipPreviousNode,nextID);
         httpModule.sendUpdateNextNode(ipNextNode,previousID);
         //Cancel the timer that checks files
         timer.cancel();
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
-        System.out.println("Previous previous IP = "+ipPreviousPreviousNode);
+        //System.out.println("Previous previous IP = "+ipPreviousPreviousNode);
         Vector<String> deleteFiles = new Vector<>();
         Vector<String> deleteLog = new Vector<>();
         for (FileLog fileLog : fileLogList) {
@@ -170,7 +170,7 @@ public class Client {
         }
 
         // Remove the node from the naming server's map.
-        System.out.println("Client: Shutdown: Notifying server");
+        //System.out.println("Client: Shutdown: Notifying server");
         httpModule.sendShutdown(this.name);
         System.out.println("Client: Shutdown completed");
     }
@@ -416,7 +416,7 @@ public class Client {
                 fileLogList.remove(fileLogList.get(i));
             }
         }
-        System.out.println("File "+fileName+" deleted.");
+        //System.out.println("File "+fileName+" deleted.");
     }
     public void addReplicatedFile(String fileName, String ownerIP, int ownerID){
         boolean present=false;
