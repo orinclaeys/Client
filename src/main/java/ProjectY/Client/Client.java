@@ -121,6 +121,7 @@ public class Client {
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
         Vector<String> deleteFiles = new Vector<>();
+        Vector<String> deleteLog = new Vector<>();
         for (FileLog fileLog : fileLogList) {
             if (!fileLog.getOwnerIP().equals(this.IPAddres)) { //File is replicated
                 if (fileLog.getReplicatedOwner().equals(this.IPAddres)) { //Replicated Files need to be send to previousnode
@@ -144,12 +145,19 @@ public class Client {
             } else {  //Local files need to be deleted by replicator and taken out of fileList?
                 if (fileLog.getReplicatedOwner() != null) {  //File is not replicated
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
-                    fileLogList.remove(fileLog);
+                    deleteLog.add(fileLog.getFileName());
                 }
             }
         }
         for(int i=0;i<deleteFiles.size();i++){
             deleteFile(deleteFiles.get(i));
+        }
+        for(int i=0;i<deleteLog.size();i++){
+            for(int j=0;j<fileLogList.size();j++){
+                if(fileLogList.get(j).getFileName().equals(deleteLog.get(i))){
+                    fileLogList.remove(j);
+                }
+            }
         }
 
         // Remove the node from the naming server's map.
