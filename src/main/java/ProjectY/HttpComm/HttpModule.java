@@ -277,11 +277,11 @@ public class HttpModule{
             HttpResponse<String> stringResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
             JSONObject response = mapper.readValue(stringResponse.body(),JSONObject.class);
-            String keys[] = (String[]) response.get("Keys");
-            Boolean values[] = (Boolean[]) response.get("Values");
+            ArrayList<String> keys = (ArrayList<String>) response.get("Keys");
+            ArrayList<Boolean> values = (ArrayList<Boolean>) response.get("Values");
             HashMap<String,Boolean> list = new HashMap<>();
-            for(int i=0;i< keys.length;i++){
-                list.put(keys[i],values[i]);
+            for(int i=0;i< keys.size();i++){
+                list.put(keys.get(i),values.get(i));
             }
             return list;
         } catch (IOException | InterruptedException e) {
