@@ -1,5 +1,6 @@
 package ProjectY.Client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +66,7 @@ public class RESTControllerClient {
     }
 
     @PutMapping(path = "Client/SyncAgent/sendSyncListRequest")
-    public JSONObject sendSyncListRequest(){
+    public JSONObject sendSyncListRequest() throws JsonProcessingException {
         ClientService clientService = new ClientService();
         return clientService.handleSyncListRequest();
     }

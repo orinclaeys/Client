@@ -3,6 +3,7 @@ package ProjectY.Client;
 import ProjectY.HttpComm.HttpModule;
 import ProjectY.HttpComm.TcpModule;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -116,9 +117,9 @@ public class ClientService extends Thread {
         client.deleteFile(fileName);
     }
 
-    public JSONObject handleSyncListRequest(){
+    public JSONObject handleSyncListRequest() throws JsonProcessingException {
         JSONObject response = new JSONObject();
-        String jsonStr = JSONValue.toJSONString(client.getSyncList());
+        String jsonStr = new ObjectMapper().writeValueAsString(client.getSyncList());
         response.put("SyncList", jsonStr);
         return response;
     }
