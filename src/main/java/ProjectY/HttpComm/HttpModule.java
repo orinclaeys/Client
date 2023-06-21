@@ -88,7 +88,7 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
-    public void sendUpdateNextNode(String IPAddress, int previousID){
+    public void sendUpdateNextNode(int ID, String IPAddress, int previousID){
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest requestPreviousNode = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/NextNode/"+ previousID))
@@ -97,10 +97,10 @@ public class HttpModule{
         try {
             httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            ClientApplication.client.Failure(ID);
         }
     }
-    public void sendUpdatePreviousNode(String IPAddress, int nextID){
+    public void sendUpdatePreviousNode(int ID, String IPAddress, int nextID){
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest requestPreviousNode = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IPAddress+":8081/ProjectY/Update/PreviousNode/"+ nextID))
@@ -109,7 +109,7 @@ public class HttpModule{
         try {
             httpClient.send(requestPreviousNode, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            ClientApplication.client.Failure(ID);
         }
     }
 
@@ -118,7 +118,7 @@ public class HttpModule{
      * REPLICATION
      * -----------
      */
-    public void askReplicationFiles(String DestinationIP, String nodeName, String nodeIP){
+    public void askReplicationFiles(int ID,String DestinationIP, String nodeName, String nodeIP){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+DestinationIP+":8081/ProjectY/Client/Discovery/askReplicationFiles/"+nodeName+"/"+nodeIP))
@@ -126,10 +126,10 @@ public class HttpModule{
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            ClientApplication.client.Failure(ID);
         }
     }
-    public void getFile(String IP, String fileName){
+    public void getFile(int ID,String IP, String fileName){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/sendFile/"+fileName))
@@ -137,10 +137,10 @@ public class HttpModule{
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            ClientApplication.client.Failure(ID);
         }
     }
-    public void resetFileInformation(String IP, String fileName){
+    public void resetFileInformation(int ID,String IP, String fileName){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/resetFile/"+fileName))
@@ -149,7 +149,7 @@ public class HttpModule{
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            ClientApplication.client.Failure(ID);
         }
     }
     public void sendDeleteFile(String ip, String fileName){
@@ -190,7 +190,7 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
-    public void sendFileInformationUpdate(String IP, String fileName, String ReplicatedIP){
+    public void sendFileInformationUpdate(int ID,String IP, String fileName, String ReplicatedIP){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/update/"+fileName+"/"+ReplicatedIP))
@@ -199,7 +199,7 @@ public class HttpModule{
         try {
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            ClientApplication.client.Failure(ID);
         }
     }
     public JSONObject sendReplication(JSONObject message){
@@ -239,7 +239,7 @@ public class HttpModule{
      * SYNC AGENT
      * ----------
      */
-    public Map<String, Boolean> sendSyncListRequest(String IP){
+    public Map<String, Boolean> sendSyncListRequest(int ID,String IP){
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IP+":8081/ProjectY/Client/SyncAgent/sendSyncListRequest"))

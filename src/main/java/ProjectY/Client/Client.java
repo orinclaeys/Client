@@ -40,8 +40,7 @@ public class Client {
         Discovery();
         verifyFiles();
         replicationUpdate();
-        //Thread syncAgentThread = new Thread(syncAgent);
-        //syncAgentThread.start();
+        syncAgentThread.start();
         print();
     }
     public void print(){
@@ -67,7 +66,7 @@ public class Client {
             }
             if(command.equals("Shutdown")){
                 shutdown();
-                syncAgentThread.interrupt();
+                syncAgent.shutdown();
             }
             if(command.equals("Discovery")){
                 Discovery();
@@ -97,7 +96,7 @@ public class Client {
     /**
      * Handles discovery: Auto-discover the Naming server and existing nodes in the network
      * During bootstrap the node will send its name and its IP address
-     * to all nodes and the Naming server in the network using multicast
+     * to all nodes and the Naming server in the network
      */
     public void Discovery(){
         JSONObject message = new JSONObject();
@@ -111,7 +110,7 @@ public class Client {
      * Failure: Node’s failure is detected. Naming server updates parameters of remaining nodes.
      * This algorithm is activated in every exception thrown during communication
      * with other nodes. This allows distributed detection of node failure
-     * Request the previous node and next node parameters from the nameserver???
+     * This method will also start the failure agent
      *
      * @param nodeID the ID of the node that failed
      */
@@ -148,7 +147,8 @@ public class Client {
     public void setPreviousId(int previousId) {previousID = previousId;}
     /**
      * Shutdown: A node leaves the ring network of system Y,
-     * and updates parameters of neighbour nodes and the Naming server
+     * and updates parameters of neighbour nodes and the Naming server.
+     * After it has done so, it will also send replicated files to new replicators and will remove owned files from the network.
      */
     public void shutdown(){
         // Get the IP-addresses of previous and next node
@@ -158,10 +158,10 @@ public class Client {
         // Update the next and previous node parameters
         // Send the ID of the next node to the previous node.
         // In the previous node, the next node parameter will be updated according to this information.
-        httpModule.sendUpdatePreviousNode(ipPreviousNode,nextID);
+        httpModule.sendUpdatePreviousNode(previousID,ipPreviousNode,nextID);
         // Send the ID of the previous node to the next node.
         // In the next node, the previous node parameter will be updated according to this information
-        httpModule.sendUpdateNextNode(ipNextNode,previousID);
+        httpModule.sendUpdateNextNode(nextID,ipNextNode,previousID);
 
         //Cancel the timer that checks files
         timer.cancel();
@@ -180,19 +180,19 @@ public class Client {
                         // ???
                         if (ipPreviousPreviousNode.equals(IPAddres)) {
                             deleteFiles.add(fileLog.getFileName());
-                            httpModule.resetFileInformation(fileLog.getOwnerIP(), fileLog.getFileName());
+                            httpModule.resetFileInformation(fileLog.getOwner(),fileLog.getOwnerIP(), fileLog.getFileName());
                         }
                         // Send to previous previous node
                         else{
                             tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
-                            httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousPreviousNode);
+                            httpModule.sendFileInformationUpdate(fileLog.getOwner(),fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousPreviousNode);
                             deleteFiles.add(fileLog.getFileName());
                         }
                     }
                     // Send to previous node
                     else {
                         tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
-                        httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousNode);
+                        httpModule.sendFileInformationUpdate(fileLog.getOwner(),fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousNode);
                         deleteFiles.add(fileLog.getFileName());
                     }
                 }
@@ -321,7 +321,7 @@ public class Client {
                 }
             }else{
                 if (currentID < Hash(newNode) && Hash(newNode) < fileLog.getFileID()) {
-                    httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), newNodeIP);
+                    httpModule.sendFileInformationUpdate(fileLog.getOwner(),fileLog.getOwnerIP(), fileLog.getFileName(), newNodeIP);
                     deletedFiles.add(fileLog.getFileName());
                 }
             }
@@ -385,6 +385,7 @@ public class Client {
      * This way, a new node to which the file is replicated becomes the owner of the file.
      * For all files, hash values are calculated and
      * the local node has to report that to the naming server
+     * This method is used in other methods for the replication
      */
     public void replication(FileLog fileLog, String IP) {
         if(IP!=null) {
@@ -445,7 +446,7 @@ public class Client {
                             }
                             else {
                                 // Request the file (replicated owner)
-                                httpModule.getFile(fileLogList.get(i).getOwnerIP(),fileLogList.get(i).getFileName());
+                                httpModule.getFile(fileLogList.get(i).getOwner(),fileLogList.get(i).getOwnerIP(),fileLogList.get(i).getFileName());
                                 break;
                             }
                         }
@@ -504,7 +505,7 @@ public class Client {
             }
         }
         if(!Objects.equals(this.NodeType, "FirstNode")) {         //ask from previousnode which files to replicate
-            this.httpModule.askReplicationFiles(httpModule.sendIPRequest(previousID), name, IPAddres);
+            this.httpModule.askReplicationFiles(previousID,httpModule.sendIPRequest(previousID), name, IPAddres);
         }
     }
 

@@ -22,9 +22,13 @@ public class SyncAgent implements Runnable, Serializable {
     private Map<String, Boolean> oldList = new HashMap<>();
     private Map<String, Boolean> syncList = new HashMap<>();
 
+    private Boolean isRunning = true;
+
+    public void shutdown(){isRunning=false;}
+
     @Override
     public void run() {
-        while(true) {
+        while(isRunning) {
             // The new list is equal to the list of the nodes that the node owns
             newList = ClientApplication.client.getOwnerList();
 
@@ -32,7 +36,7 @@ public class SyncAgent implements Runnable, Serializable {
             String nextIP = httpModule.sendIPRequest(ClientApplication.client.getNextId());
 
             // The list is equal to the sync list of the next node
-            syncList = httpModule.sendSyncListRequest(nextIP);
+            syncList = httpModule.sendSyncListRequest(ClientApplication.client.getNextId(),nextIP);
 
             for (String fileName : oldList.keySet()) {
                 // Check if the new list doest not contain the file name from the old list
