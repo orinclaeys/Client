@@ -118,33 +118,35 @@ public class Client {
 
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
-        for (int i=0;i< fileLogList.size();i++) {
-            FileLog fileLog = fileLogList.get(i);
-            if(!fileLog.getOwnerIP().equals(this.IPAddres)) { //File is replicated
+        Vector<String> deleteFiles = new Vector<>();
+        for (FileLog fileLog : fileLogList) {
+            if (!fileLog.getOwnerIP().equals(this.IPAddres)) { //File is replicated
                 if (fileLog.getReplicatedOwner().equals(this.IPAddres)) { //Replicated Files need to be send to previousnode
                     if (fileLog.getOwner() == previousID) { //owner==previousnode ==> previous previous node
                         if (NodeType.equals("NormalNode")) { //send to previous previous node
                             tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
                             httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousPreviousNode);
-                            deleteFile(fileLog.getFileName());
+                            deleteFiles.add(fileLog.getFileName());
                         }
                         if (NodeType.equals("EdgeNodeRight") || NodeType.equals("EdgeNodeLeft")) { //send back to owner
-                            deleteFile(fileLog.getFileName());
+                            deleteFiles.add(fileLog.getFileName());
                             httpModule.resetFileInformation(fileLog.getOwnerIP(), fileLog.getFileName());
                         }
                     } else { //owner!=previousnode => send to previous node
                         tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
                         httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousNode);
-                        deleteFile(fileLog.getFileName());
+                        deleteFiles.add(fileLog.getFileName());
 
                     }
                 }
-            }
-            else{  //Local files need to be deleted by replicator?
-                if (fileLog.getReplicatedOwner()!=null) {  //File is not replicated
+            } else {  //Local files need to be deleted by replicator?
+                if (fileLog.getReplicatedOwner() != null) {  //File is not replicated
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                 }
             }
+        }
+        for(int i=0;i<deleteFiles.size();i++){
+            deleteFile(deleteFiles.get(i));
         }
 
         // Remove the node from the naming server's map.
