@@ -38,11 +38,11 @@ public class Client {
 
     public void initialize(){
         Discovery();
-        verifyFiles();
-        replicationUpdate();
+        //verifyFiles();
+        //replicationUpdate();
         // Start syncAgentThread
-        Thread syncAgentThread = new Thread(syncAgent);
-        syncAgentThread.start();
+        //Thread syncAgentThread = new Thread(syncAgent);
+        //syncAgentThread.start();
         print();
     }
 
