@@ -65,7 +65,7 @@ public class RESTControllerClient {
         //System.out.println("Handled replication request");
     }
 
-    @PutMapping(path = "Client/SyncAgent/sendSyncListRequest")
+    @GetMapping(path = "Client/SyncAgent/sendSyncListRequest")
     public JSONObject sendSyncListRequest() throws JsonProcessingException {
         System.out.println("Requesting SyncList");
         ClientService clientService = new ClientService();
