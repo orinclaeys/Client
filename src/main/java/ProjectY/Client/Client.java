@@ -140,7 +140,7 @@ public class Client {
                 }
             }
             else{  //Local files need to be deleted by replicator?
-                if (fileLog.getReplicatedOwner()==null) {  //File is not replicated
+                if (fileLog.getReplicatedOwner()!=null) {  //File is not replicated
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                 }
             }
