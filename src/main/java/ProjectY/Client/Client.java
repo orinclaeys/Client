@@ -118,7 +118,8 @@ public class Client {
 
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
-        for (FileLog fileLog : fileLogList) {
+        for (int i=0;i< fileLogList.size();i++) {
+            FileLog fileLog = fileLogList.get(i);
             if(!fileLog.getOwnerIP().equals(this.IPAddres)) { //File is replicated
                 if (fileLog.getReplicatedOwner().equals(this.IPAddres)) { //Replicated Files need to be send to previousnode
                     if (fileLog.getOwner() == previousID) { //owner==previousnode ==> previous previous node
