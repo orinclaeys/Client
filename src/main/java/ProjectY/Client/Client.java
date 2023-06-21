@@ -35,6 +35,7 @@ public class Client {
     public SyncAgent syncAgent = new SyncAgent();
     private Map<String, Boolean> syncList = new HashMap<>();
     private Boolean isLocked = false;
+    private Thread syncAgentThread = new Thread(syncAgent);
 
     public Client() {
         System.out.println("Enter name: ");
@@ -357,6 +358,7 @@ public class Client {
             String command = System.console().readLine();
             if(command.equals("Shutdown")){
                 shutdown();
+                syncAgentThread.interrupt();
             }
             if(command.equals("Discovery")){
                 Discovery();
@@ -373,7 +375,6 @@ public class Client {
                 System.out.println(fileLogList);
             }
             if(command.equals("Agents")){
-                Thread syncAgentThread = new Thread(syncAgent);
                 syncAgentThread.start();
             }
         }
