@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 
+import static java.lang.Thread.sleep;
+
 public class SyncAgent implements Runnable, Serializable {
     private Map<String, Boolean> oldList = new HashMap<>();
     private Map<String, Boolean> newList = new HashMap<>();
@@ -68,7 +70,7 @@ public class SyncAgent implements Runnable, Serializable {
             //}
             // }, 0, 5000);
             try {
-                wait(10000);
+                sleep(10000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
