@@ -220,6 +220,21 @@ public class HttpModule{
             throw new RuntimeException(e);
         }
     }
+    public void resetFileInformation(String IP, String fileName){
+        System.out.println("HttpModule: send reset ReplicationIP");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IP+":8081/ProjectY/Client/replication/resetFile/"+fileName))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        System.out.println("HttpModule:  Sending to file owner");
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Httpmodule: fileReset send to client");
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void sendFileInformationUpdate(String IP, String fileName, String ReplicatedIP){
         System.out.println("HttpModule: send new ReplicationIP");
         HttpClient client = HttpClient.newHttpClient();

@@ -129,7 +129,7 @@ public class Client {
                         }
                         if (NodeType.equals("EdgeNodeRight") || NodeType.equals("EdgeNodeLeft")) { //send back to owner
                             deleteFile(fileLog.getFileName());
-                            httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), null);
+                            httpModule.resetFileInformation(fileLog.getOwnerIP(), fileLog.getFileName());
                         }
                     } else { //owner!=previousnode => send to previous node
                         tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
@@ -390,8 +390,8 @@ public class Client {
         for(FileLog fileLog: fileLogList){
             if(fileName.equals(fileLog.getFileName())){
                 fileLog.setReplicatedOwner(ReplicationIP);
-                if(!Objects.equals(ReplicationIP, "null")){
-                    tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), fileLog.getReplicatedOwner(),fileLog.getFileName());
+                if(ReplicationIP!=null) {
+                    tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), fileLog.getReplicatedOwner(), fileLog.getFileName());
                 }
             }
         }
