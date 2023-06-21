@@ -139,9 +139,10 @@ public class Client {
 
                     }
                 }
-            } else {  //Local files need to be deleted by replicator?
+            } else {  //Local files need to be deleted by replicator and taken out of fileList?
                 if (fileLog.getReplicatedOwner() != null) {  //File is not replicated
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
+                    fileLogList.remove(fileLog);
                 }
             }
         }
