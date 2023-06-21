@@ -2,40 +2,28 @@ package ProjectY.Client;
 
 import ProjectY.HttpComm.HttpModule;
 import ProjectY.HttpComm.TcpModule;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.*;
-import java.util.function.Predicate;
-
 import static java.lang.Math.abs;
 
 public class Client {
     private int previousID;
     private int nextID;
-    private int currentID;
+    private final int currentID;
     private String name;
     private String IPAddres;
     public String NodeType = "FirstNode";
-    private HttpModule httpModule = new HttpModule();
-    private TcpModule tcpModule = new TcpModule();
-    public static String ServerIP = "172.30.0.5";
-    private Vector<FileLog> fileLogList = new Vector<>();
-    //public SyncAgent syncAgent = new SyncAgent();
+    private final HttpModule httpModule = new HttpModule();
+    private final TcpModule tcpModule = new TcpModule();
+    private final Vector<FileLog> fileLogList = new Vector<>();
     private Timer timer;
 
     public SyncAgent syncAgent = new SyncAgent();
     private Map<String, Boolean> syncList = new HashMap<>();
-    private Boolean isLocked = false;
-    private Thread syncAgentThread = new Thread(syncAgent);
+    private final Boolean isLocked = false;
+    private final Thread syncAgentThread = new Thread(syncAgent);
 
     public Client() {
         System.out.println("Enter name: ");
@@ -53,10 +41,10 @@ public class Client {
         Discovery();
         verifyFiles();
         replicationUpdate();
-        print();
         // Start syncAgentThread
-        //Thread syncAgentThread = new Thread(syncAgent);
-        //syncAgentThread.start();
+        Thread syncAgentThread = new Thread(syncAgent);
+        syncAgentThread.start();
+        print();
     }
 
     public boolean updateNextID(String name){
@@ -108,7 +96,7 @@ public class Client {
     public int getNextId() {return nextID;}
     public void setNextId(int nextId) {nextID = nextId;}
     public int getCurrentId() {return currentID;}
-    private int Hash(String name){
+    public int Hash(String name){
         double max = 2147483647;
         double min = -2147483647;
         return (int) ((name.hashCode()+max)*(32768/(max+abs(min))));
@@ -175,21 +163,38 @@ public class Client {
         //System.out.println("Client: Shutdown: Notifying server");
         httpModule.sendShutdown(this.name);
     }
-    public void Failure(String nodeName) throws IOException, InterruptedException {
+    public void Failure(int nodeID) throws IOException, InterruptedException {
         System.out.println("Client: Failure: ");
-        JSONObject message = new JSONObject();
-        message.put("Failed node ID", Hash(nodeName));
-        message.put("Failed node name",nodeName);
-        httpModule.sendFailure(message);
+        //Notifying server of the failure
+        httpModule.sendFailure(nodeID);
 
-        FailureAgent failureAgent = new FailureAgent(currentID, Hash(nodeName));
+        //Create and run the failureAgent
+        FailureAgent failureAgent = new FailureAgent(currentID, nodeID);
         Thread failureAgentThread = new Thread(failureAgent);
         failureAgentThread.start();
-        // MOET DAT WEL HIER STAAN?
-        //if (failureAgent.terminate()) {
-            // MOET DIE NODE NOG VERWIJDERD WORDEN?
-            //failureAgentThread.interrupt();
-        //}
+
+        //Sending the agent to the next node
+        String nextIP = httpModule.sendIPRequest(nextID);
+        JSONObject message = new JSONObject();
+        message.put("CurrentID",failureAgent.getCurrentID());
+        message.put("FailingID",failureAgent.getFailingID());
+        httpModule.sendFailureAgent(nextIP,message);
+
+    }
+    public void startFailureAgent(int currentID, int failingID){
+        if(this.currentID!=currentID) {
+            //Create and run the failureAgent
+            FailureAgent failureAgent = new FailureAgent(currentID, failingID);
+            Thread failureAgentThread = new Thread(failureAgent);
+            failureAgentThread.start();
+
+            //Sending the agent to the next node
+            String nextIP = httpModule.sendIPRequest(nextID);
+            JSONObject message = new JSONObject();
+            message.put("CurrentID", failureAgent.getCurrentID());
+            message.put("FailingID", failureAgent.getFailingID());
+            httpModule.sendFailureAgent(nextIP, message);
+        }
     }
 
     public void Discovery(){
@@ -331,11 +336,20 @@ public class Client {
             }
         }, 0, 5000);
     }
+    public FileLog getFileLog(String fileName){
+        FileLog response = null;
+        for(FileLog fileLog: fileLogList){
+            if(fileLog.getFileName().equals(fileName)) {
+                response = fileLog;
+            }
+        }
+        return response;
+    }
 
     public Vector<String> getFileNamesList(Vector<FileLog> fileLogList) {
         Vector <String> fileNamesList = new Vector<>();
-        for (int i=0; i < fileLogList.size(); i++){
-            fileNamesList.add(fileLogList.get(i).getFileName());
+        for (FileLog fileLog : fileLogList) {
+            fileNamesList.add(fileLog.getFileName());
         }
         return fileNamesList;
     }
@@ -356,6 +370,9 @@ public class Client {
         while(running){
             System.out.println("Enter command: ");
             String command = System.console().readLine();
+            if(command.equals("Print")){
+                print();
+            }
             if(command.equals("Shutdown")){
                 shutdown();
                 syncAgentThread.interrupt();
@@ -422,8 +439,9 @@ public class Client {
     public void addReplicatedFile(String fileName, String ownerIP, int ownerID){
         boolean present=false;
         for(FileLog fileLog: fileLogList){
-            if(fileLog.getFileName().equals(fileName)){
-                present=true;
+            if (fileLog.getFileName().equals(fileName)) {
+                present = true;
+                break;
             }
         }
         if(!present) {
@@ -468,13 +486,9 @@ public class Client {
         return ownerList;
     }
 
-    public Map<String, Boolean> getSyncList() {
-        return syncList;
-    }
+    public Map<String, Boolean> getSyncList() {return syncList;}
 
-    public void setSyncList(Map<String, Boolean> syncList) {
-        this.syncList = syncList;
-    }
+    public void setSyncList(Map<String, Boolean> syncList) {this.syncList = syncList;}
 
     // Failure agent
     public Vector<String> getFailureFileNameList(int failureID) {
@@ -487,7 +501,7 @@ public class Client {
         return failureFileNameList;
     }
 
-    public boolean isFileTransferred(String fileName) {
+    public boolean hasFile(String fileName) {
         boolean response = false;
         File folder = new File("src/main/java/ProjectY/Client/Files");
         File[] files = folder.listFiles();
@@ -509,7 +523,6 @@ public class Client {
             if (Objects.equals(fileLog.getFileName(), fileName)) {
                 fileLog.setOwner(currentID);
                 fileLog.setOwnerIP(IPAddres);
-                // EDIT THE REPLICATED OWNER & OWNER IP?
             }
         }
     }

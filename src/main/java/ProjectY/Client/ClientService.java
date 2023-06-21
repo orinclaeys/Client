@@ -17,7 +17,6 @@ import java.util.Vector;
 public class ClientService extends Thread {
 
     private final Client client = ClientApplication.client;
-    private HttpModule httpModule = new HttpModule();
 
     public ClientService() {}
 
@@ -147,13 +146,13 @@ public class ClientService extends Thread {
         return response;
     }
 
-    public JSONObject handleIsFileTransferred(String fileName){
-        JSONObject response = new JSONObject();
-        response.put("isFileTransferred", client.isFileTransferred(fileName));
-        return response;
-    }
-
     public void handleNewOwner(String fileName){
         client.setNewOwner(fileName);
+    }
+
+    public void handleFailureAgent(JSONObject message){
+        int currentID = (int) message.get("CurrentID");
+        int failingID  = (int) message.get("FailingID");
+        ClientApplication.client.startFailureAgent(currentID,failingID);
     }
 }

@@ -90,28 +90,33 @@ public class HttpModule{
         }
 
     }
-    public void sendFailure(JSONObject message) throws IOException, InterruptedException {
+    public void sendFailure(int nodeID) throws IOException, InterruptedException {
         try {
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://"+serverIP+":8080/ProjectY/Failure"))
-                    .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
-                    .header("Content-type", "application/json")
-                    .timeout(Duration.ofSeconds(1000))
+                    .uri(URI.create("http://"+serverIP+":8080/ProjectY/Failure/"+nodeID))
+                    .DELETE()
                     .build();
             //System.out.println("Client: Sending to server...");
-
-            HttpResponse<String> Stringresponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ObjectMapper mapper = new ObjectMapper();
-            JSONObject response = mapper.readValue(Stringresponse.body(),JSONObject.class);
-            //System.out.println("Client: Server response: "+response.toJSONString());
-            ClientService service = new ClientService();
-            service.handleFailureResponse(response);
-
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
+    }
+    public void sendFailureAgent(String IP, JSONObject message){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://"+IP+":8080/ProjectY/Client/FailureAgent"))
+                .POST(HttpRequest.BodyPublishers.ofString(message.toJSONString()))
+                .header("Content-type", "application/json")
+                .timeout(Duration.ofSeconds(1000))
+                .build();
+        try {
+            client.send(request,HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void sendUpdatePreviousNode(String IPAddress, int nextID){
         HttpClient httpClient = HttpClient.newHttpClient();

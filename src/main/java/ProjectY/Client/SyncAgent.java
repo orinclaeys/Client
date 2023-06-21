@@ -28,14 +28,14 @@ public class SyncAgent implements Runnable, Serializable {
             // The new list is equal to the list of the nodes that the current node owns
             //newList = httpModule.sendOwnerListRequest(IP);
             newList = ClientApplication.client.getOwnerList();
-            System.out.println("Run: newList: " + newList);
+            //System.out.println("Run: newList: " + newList);
 
             // Get the IP of the next node
             //String nextIP = httpModule.sendPreviousIPRequest(ID);
             String nextIP = httpModule.sendIPRequest(ClientApplication.client.getNextId());
             // The list is equal to the sync list of the next node
             syncList = httpModule.sendSyncListRequest(nextIP);
-            System.out.println("Run: syncList: " + syncList);
+            //System.out.println("Run: syncList: " + syncList);
 
             // The new list does not contain the old file name -> remove the file name from the list
             for (String fileName : oldList.keySet()) {
@@ -62,8 +62,8 @@ public class SyncAgent implements Runnable, Serializable {
 
             // The old list becomes the new list
             oldList = new HashMap<>(newList);
-            System.out.println("oldList: " + oldList);
-            System.out.println("new syncList: " + syncList);
+            //System.out.println("oldList: " + oldList);
+            //System.out.println("new syncList: " + syncList);
 
             // Update the list stored by the node based on the agent’s list
             ClientApplication.client.setSyncList(oldList);

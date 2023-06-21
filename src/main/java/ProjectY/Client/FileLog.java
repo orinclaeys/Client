@@ -1,13 +1,9 @@
 package ProjectY.Client;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.Vector;
 
 public class FileLog {
-        private String fileName;
-        private int fileID;
+        private final String fileName;
+        private final int fileID;
         private int owner;
         private String ownerIP;
         private String replicatedOwner;

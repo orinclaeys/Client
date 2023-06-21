@@ -2,7 +2,6 @@ package ProjectY.Client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -67,9 +66,9 @@ public class RESTControllerClient {
 
     @GetMapping(path = "Client/SyncAgent/sendSyncListRequest")
     public JSONObject sendSyncListRequest() throws JsonProcessingException {
-        System.out.println("Requesting SyncList");
+        //System.out.println("Requesting SyncList");
         ClientService clientService = new ClientService();
-        System.out.println("SyncList sent ");
+        //System.out.println("SyncList sent ");
         return clientService.handleSyncListRequest();
     }
 
@@ -81,22 +80,22 @@ public class RESTControllerClient {
 
     @PostMapping(path = "Client/SyncAgent/sendSyncList")
     public void sendOwnerListRequest(@RequestBody JSONObject syncList) throws IOException {
-        System.out.println("Requesting SyncList");
+        //System.out.println("Requesting SyncList");
         ClientService clientService = new ClientService();
         clientService.handleSyncList(syncList);
-        System.out.println("SyncList sent");
+        //System.out.println("SyncList sent");
+    }
+
+    @PostMapping(path="Client/FailureAgent")
+    public void failureAgent(@RequestBody JSONObject message){
+        ClientService clientService = new ClientService();
+        clientService.handleFailureAgent(message);
     }
 
     @GetMapping(path = "Client/FailureAgent/sendFailureFileNameListRequest/{failureID}")
     public JSONObject sendFailureFileNameListRequest(@PathVariable("failureID") int failureID){
         ClientService clientService = new ClientService();
         return clientService.handleFailureFileNameList(failureID);
-    }
-
-    @GetMapping(path = "Client/FailureAgent/sendIsFileTransferredRequest/{fileName}")
-    public JSONObject sendIsFileTransferred(@PathVariable("fileName") String fileName){
-        ClientService clientService = new ClientService();
-        return clientService.handleIsFileTransferred(fileName);
     }
 
     @PostMapping(path = "Client/FailureAgent/sendNewOwner/{fileName}")
