@@ -120,6 +120,7 @@ public class Client {
         timer.cancel();
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
+        System.out.println("Previous previous IP = "+ipPreviousPreviousNode);
         Vector<String> deleteFiles = new Vector<>();
         Vector<String> deleteLog = new Vector<>();
         for (FileLog fileLog : fileLogList) {
