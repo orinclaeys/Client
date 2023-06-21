@@ -119,6 +119,7 @@ public class ClientService extends Thread {
 
     public JSONObject handleSyncListRequest() throws JsonProcessingException {
         JSONObject response = new JSONObject();
+        System.out.println("Sending list: "+client.getSyncList());
         String jsonStr = new ObjectMapper().writeValueAsString(client.getSyncList());
         response.put("SyncList", jsonStr);
         return response;

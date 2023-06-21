@@ -45,6 +45,7 @@ public class SyncAgent implements Runnable, Serializable {
                 for (String fileName : newList.keySet()) {
                     if (!oldList.containsKey(fileName)) {
                         syncList.put(fileName, newList.get(fileName));
+                        System.out.println("syncList: "+syncList);
                     }
 
                     // Update the lock value
@@ -58,6 +59,7 @@ public class SyncAgent implements Runnable, Serializable {
 
                 // The new list becomes the old list
                 oldList = newList;
+                System.out.println("oldListList: "+oldList);
 
                 // Update the list stored by the node based on the agent’s list
                 ClientApplication.client.setSyncList(syncList);
