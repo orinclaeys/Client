@@ -199,8 +199,8 @@ public class Client {
                 }
             }
             //
-            else {  //Local files need to be deleted by replicator and taken out of fileList?
-                // Check if not replicated owner??
+            else {  //Local files need to be deleted by replicator and taken out of fileList
+                // Check if the file has a replicated owner
                 if (fileLog.getReplicatedOwner() != null) {
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                     deleteLog.add(fileLog.getFileName());
