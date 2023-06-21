@@ -8,6 +8,11 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Vector;
 
+/**
+ * Failure agent is started as soon as a node failure is detected.
+ * The responsibility of this agent is to transfer all the files from
+ * a failed node to the new owner, and to update the whole file list.
+ */
 public class FailureAgent implements Runnable, Serializable {
     private final int currentID;
     private final int failingID;

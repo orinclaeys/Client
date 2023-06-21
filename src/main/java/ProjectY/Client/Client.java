@@ -19,7 +19,6 @@ public class Client {
     private final TcpModule tcpModule = new TcpModule();
     private final Vector<FileLog> fileLogList = new Vector<>();
     private Timer timer;
-
     public SyncAgent syncAgent = new SyncAgent();
     private Map<String, Boolean> syncList = new HashMap<>();
     private final Boolean isLocked = false;
@@ -47,6 +46,14 @@ public class Client {
         print();
     }
 
+    /**
+     * Updates the next id
+     * If currentID < hash < nextID, nexID = hash,
+     * current node updates its own parameter nextID.
+     *
+     * @param name the name of the node
+     * @return true if it's updated, false otherwise
+     */
     public boolean updateNextID(String name){
         int newID = Hash(name);
         if(NodeType.equals("FirstNode")){
@@ -69,6 +76,15 @@ public class Client {
             }
         }
     }
+
+    /**
+     * Updates the previous id
+     * If previousID < hash < currentID, previousID = hash,
+     * current node updates its own parameter previousID.
+     *
+     * @param name the name of the node
+     * @return true if it's updated, false otherwise
+     */
     public boolean updatePreviousID(String name) {
         int newID = Hash(name);
         if(Objects.equals(NodeType, "FirstNode")){
@@ -89,58 +105,80 @@ public class Client {
             }else{
                 return false;
             }
-
         }
     }
     public void setPreviousId(int previousId) {previousID = previousId;}
     public int getNextId() {return nextID;}
     public void setNextId(int nextId) {nextID = nextId;}
     public int getCurrentId() {return currentID;}
+    /**
+     * Calculates the hash based on the node name
+     *
+     * @param name the name of the node
+     * @return the calculated hash
+     */
     public int Hash(String name){
         double max = 2147483647;
         double min = -2147483647;
         return (int) ((name.hashCode()+max)*(32768/(max+abs(min))));
     }
+
+    /**
+     * Handles a shutdown: A node leaves the ring network of system Y,
+     * and updates parameters of neighbour nodes and the Naming server
+     */
     public void shutdown(){
-        //System.out.println("Client: Shutting down...");
-        // Getting IP-Addresses of previous and next node
-        //System.out.println("Client: Shutdown: Obtaining IP-adresses");
+        // Get the IP-addresses of previous and next node
         String ipPreviousNode = httpModule.sendIPRequest(previousID);
         String ipNextNode = httpModule.sendIPRequest(nextID);
 
-        // Update the next and previous node parameters.
-        //System.out.println("Client: Shutdown: Updating previous and next node");
+        // Update the next and previous node parameters
+        // Send the ID of the next node to the previous node.
+        // In the previous node, the next node parameter will be updated according to this information.
         httpModule.sendUpdatePreviousNode(ipPreviousNode,nextID);
+        // Send the ID of the previous node to the next node.
+        // In the next node, the previous node parameter will be updated according to this information
         httpModule.sendUpdateNextNode(ipNextNode,previousID);
+
         //Cancel the timer that checks files
         timer.cancel();
+
         // Get the replicated files and update the previous node
         String ipPreviousPreviousNode = httpModule.sendPreviousIPRequest(previousID);
         //System.out.println("Previous previous IP = "+ipPreviousPreviousNode);
         Vector<String> deleteFiles = new Vector<>();
         Vector<String> deleteLog = new Vector<>();
         for (FileLog fileLog : fileLogList) {
-            if (!fileLog.getOwnerIP().equals(this.IPAddres)) { //File is replicated
+            // Check if owner of the file
+            if (!fileLog.getOwnerIP().equals(this.IPAddres)) {
+                // Check if replicated owner of the file
                 if (fileLog.getReplicatedOwner().equals(this.IPAddres)) { //Replicated Files need to be send to previousnode
-                    if (fileLog.getOwner() == previousID) { //owner==previousnode ==> previous previous node
-                        if (ipPreviousPreviousNode.equals(IPAddres)) { //send back to owner
+                    // Check if previous owner of the file
+                    if (fileLog.getOwner() == previousID) {
+                        // ???
+                        if (ipPreviousPreviousNode.equals(IPAddres)) {
                             deleteFiles.add(fileLog.getFileName());
                             httpModule.resetFileInformation(fileLog.getOwnerIP(), fileLog.getFileName());
                         }
-                        else{ //send to previous previous node
+                        // Send to previous previous node
+                        else{
                             tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousPreviousNode, fileLog.getFileName());
                             httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousPreviousNode);
                             deleteFiles.add(fileLog.getFileName());
                         }
-                    } else { //owner!=previousnode => send to previous node
+                    }
+                    // Send to previous node
+                    else {
                         tcpModule.sendFile(fileLog.getOwner(), fileLog.getOwnerIP(), ipPreviousNode, fileLog.getFileName());
                         httpModule.sendFileInformationUpdate(fileLog.getOwnerIP(), fileLog.getFileName(), ipPreviousNode);
                         deleteFiles.add(fileLog.getFileName());
-
                     }
                 }
-            } else {  //Local files need to be deleted by replicator and taken out of fileList?
-                if (fileLog.getReplicatedOwner() != null) {  //File is not replicated
+            }
+            //
+            else {  //Local files need to be deleted by replicator and taken out of fileList?
+                // Check if not replicated
+                if (fileLog.getReplicatedOwner() != null) {
                     httpModule.sendDeleteFile(fileLog.getReplicatedOwner(), fileLog.getFileName());
                     deleteLog.add(fileLog.getFileName());
                 }else{
@@ -158,11 +196,18 @@ public class Client {
                 }
             }
         }
-
-        // Remove the node from the naming server's map.
-        //System.out.println("Client: Shutdown: Notifying server");
+        // Remove the node from the naming server's map
         httpModule.sendShutdown(this.name);
     }
+
+    /**
+     * Failure: This algorithm is activated in every exception thrown during communication
+     * with other nodes. This allows distributed detection of node failure
+     * Request the previous node and next node parameters from the nameserver
+     *
+     * @param nodeID the ID of the node
+     */
+
     public void Failure(int nodeID) throws IOException, InterruptedException {
         System.out.println("Client: Failure: ");
         //Notifying server of the failure
@@ -179,6 +224,8 @@ public class Client {
         message.put("CurrentID",failureAgent.getCurrentID());
         message.put("FailingID",failureAgent.getFailingID());
         httpModule.sendFailureAgent(nextIP,message);
+        // Request the previous node and next node parameters from the nameserver
+
 
     }
     public void startFailureAgent(int currentID, int failingID){
@@ -197,6 +244,13 @@ public class Client {
         }
     }
 
+    /**
+     * Handles discovery: Auto-discover the Naming server and existing nodes in the network
+     * Starting each node, initializing local parameters (previous, nextnode), and updating
+     * parameters of existing nodes
+     * During bootstrap the node will send its name and its IP address
+     * to all nodes and the Naming server in the network using multicast
+     */
     public void Discovery(){
         //System.out.println("Client: Discovery...");
         JSONObject message = new JSONObject();
@@ -205,7 +259,6 @@ public class Client {
         message.put("Name",this.name);
         message.put("IPAddress",this.IPAddres);
         this.httpModule.sendDiscovery(message);
-
     }
 
     public void askReplicationFiles(String newNode, String newNodeIP) {
@@ -251,6 +304,12 @@ public class Client {
         System.out.println("-------------------");
     }
 
+    /**
+     * Replication: All files that are stored on each node should be replicated to corresponding nodes in system Y.
+     * This way, a new node to which the file is replicated becomes the owner of the file.
+     * For all files, hash values are calculated and
+     * the local node has to report that to the naming server
+     */
     public void verifyFiles(){
         File directory = new File("src/main/java/ProjectY/Client/Files");
         File[] contentOfDirectory = directory.listFiles();
@@ -266,7 +325,6 @@ public class Client {
         }
         for (FileLog fileLog : fileLogList) {     //send filesID's to server
             JSONObject message = new JSONObject();
-
             message.put("Sender", "Client");
             message.put("Message", "Replication");
             message.put("fileID",fileLog.getFileID());
@@ -287,9 +345,15 @@ public class Client {
             this.tcpModule.sendFile(fileLog.getOwner(),fileLog.getOwnerIP(), IP, fileLog.getFileName());
         }
     }
-
-    // Check the local folder for changes at regular time intervals
+    /**
+     * Replication: If new files are added locally to certain node, or deleted from a node,
+     * this state has to be synchronized in the whole system.
+     * If a new file is added, then it has to be replicated.
+     * Otherwise, if deleted, it has to be deleted from the replicated files of the file owner as well.
+     */
     public void replicationUpdate(){
+        // In order to detect new files being added to the node,
+        // a thread can be executed that checks for changes on the local folder at regular intervals.
         timer=new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -302,8 +366,8 @@ public class Client {
                     for (File file : files) {
                         if (file.isFile()) {
                             fileNames.add(file.getName());
+                            // Check if file added
                             if (!getFileNamesList(fileLogList).contains(file.getName())) {
-                                System.out.println("Client: New file detected: " + file.getName());
                                 FileLog fileLog = new FileLog(file.getName(), Hash(file.getName()));
                                 fileLog.setOwner(currentID);
                                 fileLog.setOwnerIP(IPAddres);
@@ -321,12 +385,16 @@ public class Client {
                         }
                     }
                     for (int i=0;i< fileLogList.size();i++) {
+                        // Check if file deleted
                         if (!fileNames.contains(fileLogList.get(i).getFileName())) {
+                            // Check if owner
                             if(fileLogList.get(i).getOwnerIP().equals(IPAddres)) {
+                                // Delete the file everywhere
                                 httpModule.sendDeleteFile(fileLogList.get(i).getReplicatedOwner(), fileLogList.get(i).getFileName());
                                 fileLogList.remove(fileLogList.get(i));
                             }
                             else {
+                                // Request the file (replicated owner)
                                 httpModule.getFile(fileLogList.get(i).getOwnerIP(),fileLogList.get(i).getFileName());
                                 break;
                             }
@@ -336,6 +404,7 @@ public class Client {
             }
         }, 0, 5000);
     }
+
     public FileLog getFileLog(String fileName){
         FileLog response = null;
         for(FileLog fileLog: fileLogList){
@@ -469,11 +538,7 @@ public class Client {
             }
         }
     }
-
-
     public String getIPAddres() {return IPAddres;}
-
-
     public Map<String, Boolean> getOwnerList() {
         Map<String, Boolean> ownerList = new HashMap<>();
         for (FileLog fileLog : fileLogList) {

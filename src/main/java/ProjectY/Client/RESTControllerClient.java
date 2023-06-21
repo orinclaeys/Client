@@ -1,7 +1,7 @@
 package ProjectY.Client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -11,6 +11,11 @@ import java.io.IOException;
 
 public class RESTControllerClient {
 
+    /**
+     * ---------
+     * DISCOVERY
+     * ---------
+     */
     @PostMapping(path = "Discovery")
     public JSONObject discoveryResponse(@RequestBody JSONObject response) {
         ClientService clientService = new ClientService();
@@ -22,21 +27,33 @@ public class RESTControllerClient {
     @PutMapping(path = "Shutdown/{nodeName}/{IPAddress}")
     public void shutdown(@PathVariable("nodeName") String nodeName, @PathVariable("IPAddress") String IPAddress) throws IOException, InterruptedException {
         ClientService clientService = new ClientService();
-        ClientApplication.client.shutdown();
+        clientService.handleShutdown();
+    }
+    @PutMapping("Update/NextNode/{PreviousId}")
+    public void updateNextNode(@PathVariable("PreviousId") int PreviousId) {
+        ClientService clientService = new ClientService();
+        clientService.handleUpdateNextNode(PreviousId);
     }
 
     @PutMapping("Update/PreviousNode/{NextId}")
     public void updatePreviousNode(@PathVariable("NextId") int NextId) {
         ClientService clientService = new ClientService();
-        ClientApplication.client.setNextId(NextId);
-        ClientApplication.client.updateNodeType();
+        clientService.handleUpdatePreviousNode(NextId);
     }
 
-    @PutMapping("Update/NextNode/{PreviousId}")
-    public void updateNextNode(@PathVariable("PreviousId") int PreviousId) {
+    /**
+     * -----------
+     * REPLICATION
+     * -----------
+     */
+    @GetMapping(path="Client/Discovery/askReplicationFiles/{newNode}/{newNodeIP}")
+    public void askReplicationFiles(@PathVariable("newNode") String newNode,@PathVariable("newNodeIP") String newNodeIP){
+        ClientApplication.client.askReplicationFiles(newNode,newNodeIP);
+    }
+    @DeleteMapping(path="Client/replication/sendDeleteFile/{fileName}")
+    public void deleteFile(@PathVariable("fileName") String fileName) {
         ClientService clientService = new ClientService();
-        ClientApplication.client.setPreviousId(PreviousId);
-        ClientApplication.client.updateNodeType();
+        clientService.handleDeleteFile(fileName);
     }
 
     @PutMapping(path = "Replication")
@@ -51,40 +68,25 @@ public class RESTControllerClient {
         clientService.handleFileInformation(message);
     }
 
-    @DeleteMapping(path="Client/replication/sendDeleteFile/{fileName}")
-    public void deleteFile(@PathVariable("fileName") String fileName) {
-        ClientService clientService = new ClientService();
-        //System.out.println("Delete "+fileName);
-        clientService.handleDeleteFile(fileName);
-    }
-    @GetMapping(path="Client/Discovery/askReplicationFiles/{newNode}/{newNodeIP}")
-    public void askReplicationFiles(@PathVariable("newNode") String newNode,@PathVariable("newNodeIP") String newNodeIP){
-        //System.out.println("New node asking for replication files...");
-        ClientApplication.client.askReplicationFiles(newNode,newNodeIP);
-        //System.out.println("Handled replication request");
-    }
-
     @GetMapping(path = "Client/SyncAgent/sendSyncListRequest")
-    public JSONObject sendSyncListRequest() throws JsonProcessingException {
+    public JSONObject sendSyncListRequest() {
         //System.out.println("Requesting SyncList");
         ClientService clientService = new ClientService();
         //System.out.println("SyncList sent ");
         return clientService.handleSyncListRequest();
     }
 
+    /**
+     * ----------
+     * SYNC AGENT
+     * ----------
+     */
     @PutMapping(path = "Client/SyncAgent/sendOwnerListRequest")
     public JSONObject sendOwnerListRequest(){
         ClientService clientService = new ClientService();
         return clientService.handleOwnerListRequest();
     }
 
-    @PostMapping(path = "Client/SyncAgent/sendSyncList")
-    public void sendOwnerListRequest(@RequestBody JSONObject syncList) throws IOException {
-        //System.out.println("Requesting SyncList");
-        ClientService clientService = new ClientService();
-        clientService.handleSyncList(syncList);
-        //System.out.println("SyncList sent");
-    }
 
     @PostMapping(path="Client/FailureAgent")
     public void failureAgent(@RequestBody JSONObject message){
@@ -92,6 +94,11 @@ public class RESTControllerClient {
         clientService.handleFailureAgent(message);
     }
 
+    /**
+     * -------------
+     * FAILURE AGENT
+     * -------------
+    */
     @GetMapping(path = "Client/FailureAgent/sendFailureFileNameListRequest/{failureID}")
     public JSONObject sendFailureFileNameListRequest(@PathVariable("failureID") int failureID){
         ClientService clientService = new ClientService();
