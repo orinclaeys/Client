@@ -276,8 +276,9 @@ public class HttpModule{
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Boolean> list = mapper.readValue(response.body(), HashMap.class);
-            System.out.println("SyncList response: "+list);
+            Map<String, Map<String,Boolean>> list1 = mapper.readValue(response.body(), HashMap.class);
+            Map<String,Boolean> list = list1.get("SyncList");
+            System.out.println("SyncList response: "+list.get("SyncList"));
             return list;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
