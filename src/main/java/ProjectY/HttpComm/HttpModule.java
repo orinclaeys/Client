@@ -268,7 +268,7 @@ public class HttpModule{
 
     // Request the sync list
     public Map<String, Boolean> sendSyncListRequest(String IPAddress){
-        System.out.println("HttpModule: sendSyncListRequest");
+        System.out.println("HttpModule: sendSyncListRequest to "+IPAddress);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://"+IPAddress+":8081/ProjectY/SyncAgent/sendSyncListRequest"))
