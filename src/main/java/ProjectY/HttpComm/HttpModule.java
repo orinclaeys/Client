@@ -15,9 +15,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.List;
 
 public class HttpModule{
@@ -279,7 +277,7 @@ public class HttpModule{
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Boolean> list = mapper.readValue((JsonParser) response, Map.class);
+            Map<String, Boolean> list = mapper.readValue(response.body(), HashMap.class);
             return list;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
